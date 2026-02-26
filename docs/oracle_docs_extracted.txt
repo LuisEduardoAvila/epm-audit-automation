@@ -1,0 +1,8 @@
+Title: Oracle Fusion Cloud EPM REST APIs for Oracle Fusion Cloud EPM
+URL: https://docs.oracle.com/en/cloud/saas/enterprise-performance-management-common/prest/index.html
+================================================================================
+Oracle® Fusion Cloud EPM
+
+REST APIs for Oracle Fusion Cloud EPM
+
+G42939-02
