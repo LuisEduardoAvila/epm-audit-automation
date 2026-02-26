@@ -1,258 +1,233 @@
-# EPM Audit Extraction Matrix
+# EPM System Administration Audit Extraction Matrix
 
-*Complete reference of all audit-relevant data points across Oracle EPM Cloud*
-
----
-
-## 1. FCCS (Financial Consolidation and Close Cloud Service)
-
-### Core Audit Artifacts
-
-| Artifact | API Endpoint | Extraction Method | Frequency | SOX Relevance |
-|----------|--------------|-------------------|-----------|---------------|
-| **Journal Entries** | `/interop/rest/{version}/applications/{application}/ journals` | REST API | Daily | Critical - All manual/posted entries |
-| **Consolidation Rules** | `/aif/rest/{version}/jobs` + rule execution logs | REST API | Weekly | High - Automated calculations |
-| **Period Close Status** | `/calendars` + period state | REST API | Daily | Critical - Close timeline evidence |
-| **Data Forms Audit** | `/dataforms/{form}/audit` | REST API | Weekly | Medium - Data entry changes |
-| **Security/Users** | `/security/users` + `/security/groups` | EPM Automate | Weekly | Critical - Access review |
-| **Dimension Changes** | `/dimensions/{dim}/members/audit` | REST API | Daily | High - Chart of accounts changes |
-| **Task Manager** | `/tasks` + completion status | REST API | Daily | Medium - Close task evidence |
-| **Supplemental Data** | `/supplementaldata` | REST API | Weekly | Medium - Supporting schedules |
-
-### FCCS-Specific Logs
-```
-Artifact Types:
-- Consolidation log (rule execution detail)
-- Translation log (currency conversion)
-- Intercompany matching status
-- Ownership management changes
-- Equity pickup calculations
-```
+*Complete reference of system-level audit data for IT security and infrastructure compliance*
 
 ---
 
-## 2. PBCS (Planning and Budgeting Cloud Service)
+## 1. Identity & Access Management (IAM)
 
-### Core Audit Artifacts
+### User Lifecycle Management
 
-| Artifact | API Endpoint | Extraction Method | Frequency | SOX Relevance |
-|----------|--------------|-------------------|-----------|---------------|
-| **Data Input Forms** | `/applications/{app}/forms` + history | REST API | Weekly | High - Manual data entry |
-| **Planning Approval** | `/approval` + workflow status | REST API | Daily | Critical - Budget sign-off |
-| **Business Rules** | `/businessrules` + execution log | REST API | Weekly | Medium - Calculation logic |
-| **Smart Lists** | `/smartlists` + changes | REST API | Monthly | Low - Drop-down values |
-| **User Variables** | `/uservariables` | REST API | Monthly | Low - User context |
-| **Security Filters** | `/securityfilters` | REST API | Weekly | High - Row-level security |
-| **Audit Trail** | `/audit` - who changed what cells | REST API | Daily | Critical - Cell-level changes |
-
-### PBCS-Specific Considerations
-```
-Key Extraction Points:
-- Version changes (Working → Final)
-- Scenario modifications (Actual → Forecast)
-- Plan type structure changes
-- Currency rate table updates
-- Substitution variable changes
-```
-
----
-
-## 3. EDM (Enterprise Data Management)
-
-### Core Audit Artifacts
-
-| Artifact | API Endpoint | Extraction Method | Frequency | SOX Relevance |
-|----------|--------------|-------------------|-----------|---------------|
-| **Hierarchy Changes** | `/applications/{app}/views/{view}/requests` | REST API | Daily | Critical - Org structure |
-| **Node Changes** | `/nodes/{node}/history` | REST API | Daily | Critical - Account changes |
-| **Request History** | `/requests` + approval workflow | REST API | Daily | Critical - Change approval |
-| **Policy Violations** | `/policies/violations` | REST API | Weekly | Medium - Governance |
-| **User Access** | `/security/access` | REST API | Weekly | High - Access review |
-| **Data Chain** | `/chains` + lineage | REST API | Monthly | Medium - Data flow |
-
-### EDM Critical for SOX
-```
-Must Track:
-- Account hierarchy changes (affects FCCS/ARCS)
-- Cost center restructures
-- Product line additions/changes
-- Intercompany partner updates
-- Currency/entity mappings
-```
-
----
-
-## 4. ARCS (Account Reconciliation Cloud Service)
-
-### Core Audit Artifacts
-
-| Artifact | API Endpoint | Extraction Method | Frequency | SOX Relevance |
-|----------|--------------|-------------------|-----------|---------------|
-| **Reconciliation Status** | `/reconciliations` | REST API | Daily | Critical - Close status |
-| **Transaction Details** | `/reconciliations/{id}/transactions` | REST API | Daily | High - Supporting detail |
-| **Balance Explained** | `/reconciliations/{id}/explained` | REST API | Daily | Critical - Aging analysis |
-| **User Comments** | `/reconciliations/{id}/comments` | REST API | Daily | Medium - Justification |
-| **Attachment Evidence** | `/reconciliations/{id}/attachments` | REST API | Weekly | Medium - Documentation |
-| **Format Changes** | `/formats` + history | REST API | Monthly | Low - Template changes |
-| **Security/Profiles** | `/profiles` + assignments | REST API | Weekly | High - Who reconciles what |
-| **Compliance Rules** | `/rules` + violations | REST API | Weekly | Medium - Auto-certification |
-
-### ARCS Audit Report Types
-```
-Standard Reports:
-- Reconciliation Compliance (certified/uncertified)
-- Age Profile (30/60/90/120+ days)
-- Transaction Volume by Preparer
-- Auto-Reconciliation Statistics
-- Manual Adjustment Tracking
-```
-
----
-
-## 5. TRCS (Tax Reporting Cloud Service)
-
-### Core Audit Artifacts
-
-| Artifact | API Endpoint | Extraction Method | Frequency | SOX Relevance |
-|----------|--------------|-------------------|-----------|---------------|
-| **Tax Provision** | `/taxprovisions` + calculations | REST API | Per close | Critical - Tax expense |
-| **Rate Changes** | `/taxrates` + effective dates | REST API | Quarterly | High - Rate validation |
-| **Jurisdiction Tables** | `/jurisdictions` | REST API | Quarterly | Medium - Entity mapping |
-| **Adjustment Entries** | `/adjustments` | REST API | Per close | Critical - Manual entries |
-| **Return to Accrual** | `/rta` differences | REST API | Quarterly | High - Reconciliation |
-| **Deferred Tax** | `/deferredtax` rollforward | REST API | Per close | Critical - DTA/DTL |
-
----
-
-## 6. PCM (Profitability and Cost Management)
-
-### Core Audit Artifacts
-
-| Artifact | API Endpoint | Extraction Method | Frequency | SOX Relevance |
-|----------|--------------|-------------------|-----------|---------------|
-| **Allocation Rules** | `/rules` + execution history | REST API | Weekly | High - Cost allocation |
-| **Model Changes** | `/models` + version history | REST API | Monthly | Medium - Structure changes |
-| **Traceability** | `/trace` reports | REST API | Per allocation | High - Audit trail |
-| **Driver Data** | `/drivers` + updates | REST API | Weekly | Medium - Allocation basis |
-| **Stage Balances** | `/stages/{stage}/balances` | REST API | Per allocation | High - Inter-stage proof |
-
----
-
-## 7. Data Exchange (EPM Integration)
-
-### Core Audit Artifacts
-
-| Artifact | Location | Extraction Method | Frequency | SOX Relevance |
-|----------|----------|-------------------|-----------|---------------|
-| **Data Load Rules** | `/dataexchange/rules` | REST API | Weekly | Medium - Load logic |
-| **Execution Logs** | `/dataexchange/executions` | REST API | Daily | Critical - Load success/fail |
-| **Error Reports** | `/dataexchange/errors` | REST API | Daily | High - Data integrity |
-| **Mapping Tables** | `/dataexchange/mappings` | REST API | Weekly | Medium - Data transformation |
-| **Source System Logs** | Audit table | SQL/EPM | Daily | High - Source to target |
-| **File Transfer Logs** | Inbox/Outbox | File scan | Daily | Medium - File-based loads |
-
-### Data Exchange Critical Checks
-```
-Must Monitor:
-- Failed loads (immediate alert)
-- Record count variances
-- Mapping errors
-- Transformation failures
-- Duplicate record detection
-```
-
----
-
-## 8. OCI Integration (Oracle Cloud Infrastructure)
-
-### Core Audit Artifacts
-
-| Artifact | OCI Service | Extraction Method | Frequency | SOX Relevance |
+| Artifact | Data Source | Extraction Method | Frequency | Audit Purpose |
 |----------|-------------|-------------------|-----------|---------------|
-| **Audit Logs** | Audit Service | OCI CLI/API | Real-time | Critical - All API calls |
-| **IAM Changes** | Identity Service | OCI CLI | Daily | Critical - User/role changes |
-| **Sign-In Events** | IAM Audit | OCI CLI | Daily | Critical - Access evidence |
-| **Compartment Changes** | IAM/Compartments | OCI CLI | Weekly | Medium - Resource org |
-| **Network Security Groups** | Networking | OCI CLI | Weekly | High - Firewall rules |
-| **Database Audit** | Autonomous DB | SQL Queries | Daily | Critical - Direct DB access |
-| **Object Storage Access** | Object Storage | OCI CLI | Daily | Medium - File access |
-| **Function Invocations** | Functions | OCI CLI | Daily | Medium - Automation logs |
+| **User Provisioning Log** | OCI IAM + EPM Security | OCI Audit API / EPM Security API | Daily/Real-time | Detect unauthorized account creation |
+| **User Deprovisioning Log** | OCI IAM + HR Feed | OCI Audit API + HR Comparison | Daily/Real-time | Orphan account detection (terminated users with access) |
+| **User Modification History** | OCI IAM | OCI Audit API (UpdateUser events) | Daily | Privilege escalation tracking |
+| **Last Login Activity** | OCI IAM Sign-In | OCI Sign-In Events | Daily | Dormant account identification |
+| **MFA Enrollment Status** | OCI IAM | Identity API | Weekly | Compliance with MFA policy |
+| **Password/Key Rotation** | OCI IAM | Audit events (CreateApiKey, DeleteAuthToken, etc.) | Daily | Credential hygiene monitoring |
 
-### OCI Audit Log Critical Events
-```
-Must Capture:
-- epminstance:create, epminstance:delete
-- user:create, user:delete, user:update
-- group:add-user, group:remove-user
-- policy:create, policy:update
-- compartment:create, compartment:delete
-- apikey:create, apikey:delete
-- authtoken:create, authtoken:delete
-```
+### Group & Role Management
 
----
+| Artifact | Data Source | Extraction Method | Frequency | Audit Purpose |
+|----------|-------------|-------------------|-----------|---------------|
+| **Group Membership Changes** | OCI IAM | Audit API (AddUserToGroup, RemoveUserFromGroup) | Real-time | Privileged access changes |
+| **Custom Role Definitions** | OCI IAM Policies | Policy API + Audit | Weekly | Principle of least privilege review |
+| **Service Account Inventory** | OCI IAM | User API (filter by type) | Weekly | Service account governance |
+| **Cross-Tenancy Access** | OCI IAM | Policy analysis | Weekly | External access review |
 
-## Extraction Summary by Frequency
+### EPM Application Security
 
-### Daily (Critical for SOX)
-1. FCCS: Journal entries, period close status
-2. PBCS: Approval workflows, audit trail
-3. EDM: Hierarchy/requests, node history
-4. ARCS: Reconciliation status, transactions
-5. Data Exchange: Execution logs, errors
-6. OCI: IAM changes, audit logs
-
-### Weekly (Medium Priority)
-1. FCCS: Users/groups, dimension changes
-2. PBCS: Forms, security filters
-3. EDM: Policy violations
-4. ARCS: Security profiles, attachments
-5. TRCS: Rate tables (if quarterly close)
-6. PCM: Allocation rules, driver data
-7. OCI: Compartment changes
-
-### Monthly/Quarterly (Lower Priority)
-- Smart Lists (PBCS)
-- Model changes (PCM)
-- Jurisdiction tables (TRCS)
-- Compliance rule updates
+| Artifact | Data Source | Extraction Method | Frequency | Audit Purpose |
+|----------|-------------|-------------------|-----------|---------------|
+| **EPM Role Assignments** | EPM Security (all apps) | REST API `/security/roles` | Weekly | Role-to-user mapping |
+| **Security Filter Changes** | FCCS/PBCS | Security API + Audit | Weekly | Data access restrictions |
+| **Approvals Workflow Config** | All EPM apps | Admin API | Weekly | Delegation of authority changes |
+| **SSO Configuration** | OCI IAM Federation | IAM Policies + Audit | Monthly | Identity provider changes |
 
 ---
 
-## API Authentication Methods
+## 2. Infrastructure & Environment Management
 
-| Method | Applications | Notes |
-|--------|--------------|-------|
-| **Basic Auth** | FCCS, PBCS, EDM, ARCS | Username/password or SSO |
-| **OAuth 2.0** | All EPM Cloud | Recommended for automation |
-| **OCI API Key** | OCI Services | PEM key + fingerprint |
-| **Instance Principal** | OCI Services | For OCI Functions/Compute |
+### EPM Instance Lifecycle
+
+| Artifact | Data Source | Extraction Method | Frequency | Audit Purpose |
+|----------|-------------|-------------------|-----------|---------------|
+| **Instance Creation/Deletion** | OCI Audit + EPM Console | OCI Audit API | Real-time | Unauthorized environment provisioning |
+| **Instance Scaling Events** | OCI Compute | Audit API | Weekly | Resource utilization tracking |
+| **Instance Configuration Changes** | EPM Settings | EPM Admin API | Daily | Environment drift detection |
+| **Maintenance Windows** | OCI Notifications + EPM Status | API + Email parsing | Per event | Planned vs. unplanned changes |
+| **Backup Configuration** | OCI Block Storage + EPM | Volume API + EPM Settings | Weekly | RPO/RTO compliance |
+| **Disaster Recovery Setup** | OCI Regions + EPM | Multi-region audit | Monthly | DR readiness validation |
+
+### Network & Connectivity
+
+| Artifact | Data Source | Extraction Method | Frequency | Audit Purpose |
+|----------|-------------|-------------------|-----------|---------------|
+| **Security Group Rules** | OCI Networking | Audit API + Network API | Weekly | Firewall rule changes |
+| **VPN/IPSec Configuration** | OCI Networking | Network API | Weekly | Remote access security |
+| **Private Endpoint Changes** | OCI Networking | Audit API | Weekly | Data exfiltration risk |
+| **Load Balancer Config** | OCI Load Balancer | API + Audit | Monthly | High availability settings |
+| **DNS Configuration** | OCI DNS | Audit API | Monthly | Domain/security validation |
+
+### Integration Endpoints
+
+| Artifact | Data Source | Extraction Method | Frequency | Audit Purpose |
+|----------|-------------|-------------------|-----------|---------------|
+| **Data Exchange Configuration** | EDMCS/FCCS | Admin API | Weekly | Integration point security |
+| **EPM Automate Agent Status** | Agent Registration | Agent API | Daily | Automation infrastructure health |
+| **ODI/ETL Configuration** | Data Integration | Repository API | Weekly | Data pipeline audit |
+| **API Gateway Settings** | OCI API Gateway | API + Audit | Weekly | External API exposure |
+| **Webhook Configurations** | EPM Notifications | Configuration export | Weekly | Outbound call monitoring |
+
+---
+
+## 3. Change Management & Configuration
+
+### Application Configuration
+
+| Artifact | Data Source | Extraction Method | Frequency | Audit Purpose |
+|----------|-------------|-------------------|-----------|---------------|
+| **Dimension/Metadata Changes** | EDM | Request API + Audit | Daily | Master data governance |
+| **Business Rule Updates** | FCCS/PBCS | Rules API + Versioning | Daily | Calculation logic changes |
+| **Form/Grid Modifications** | PBCS/FCCS | Form API + Audit | Weekly | UI/Input control changes |
+| **Report Definition Changes** | All EPM | Report API | Weekly | Financial reporting changes |
+| **Task List Updates** | FCCS | Task Manager API | Weekly | Close procedure changes |
+| **Currency Rate Tables** | FCCS/PBCS | Rate API | Daily (month-end) | FX rate governance |
+| **Substitution Variables** | All EPM | Variable API | Weekly | Cross-app configuration |
+
+### System Configuration
+
+| Artifact | Data Source | Extraction Method | Frequency | Audit Purpose |
+|----------|-------------|-------------------|-----------|---------------|
+| **System Setting Changes** | EPM Console | Settings API | Daily | Global configuration drift |
+| **Email/Notification Config** | EPM Notifications | Notification API | Weekly | Communication audit |
+| **Audit Retention Settings** | EPM Security | Admin API | Monthly | Compliance retention |
+| **Session Timeout Policies** | OCI IAM + EPM | Policy API | Monthly | Security hardening |
+| **Encryption Configuration** | OCI KMS + EPM | KMS API + EPM Settings | Monthly | Data protection validation |
+
+---
+
+## 4. Security & Compliance Monitoring
+
+### Access Control Monitoring
+
+| Artifact | Data Source | Extraction Method | Frequency | Audit Purpose |
+|----------|-------------|-------------------|-----------|---------------|
+| **Failed Login Attempts** | OCI IAM + EPM | Audit API + Sign-In logs | Real-time | Brute force detection |
+| **Elevated Privilege Usage** | OCI IAM | Audit API (admin actions) | Daily | Privileged access monitoring |
+| **After-Hours Access** | OCI IAM + EPM | Sign-In logs | Daily | Anomalous access patterns |
+| **Geographic Access Anomalies** | OCI IAM | Sign-In logs | Daily | Impossible travel detection |
+| **Concurrent Session Analysis** | OCI IAM | Session API | Daily | Account sharing detection |
+| **API Key Usage Patterns** | OCI IAM | Audit API | Weekly | Key exfiltration detection |
+
+### Data Security
+
+| Artifact | Data Source | Extraction Method | Frequency | Audit Purpose |
+|----------|-------------|-------------------|-----------|---------------|
+| **Data Export Activities** | Data Management | Export API + Audit | Daily | Unauthorized data extraction |
+| **Bulk Data Downloads** | Smart View / REST | API + Access logs | Daily | Data leakage detection |
+| **Snapshot/Backup Access** | OCI Object Storage | Access logs | Weekly | Backup data access |
+| **Cross-Border Data Transfer** | OCI Audit | Audit events | Weekly | GDPR/data residency |
+| **Data Masking Configuration** | EPM Test environments | Admin API | Monthly | PII protection |
+
+### Compliance Artifacts
+
+| Artifact | Data Source | Extraction Method | Frequency | Audit Purpose |
+|----------|-------------|-------------------|-----------|---------------|
+| **SOC2 Evidence** | OCI/Epm | Compliance API | Quarterly | Control evidence export |
+| **ISO 27001 Artifacts** | Security Config | Configuration export | Quarterly | Standard compliance |
+| **License Utilization** | OCI/Epm | Usage API | Monthly | License compliance |
+| **Vendor Access Reviews** | Third-party integrations | Integration audit | Quarterly | Supplier risk |
+| **Certificate Expiration** | OCI Certificates | Certificate API | Weekly | TLS/SSL validity |
+
+---
+
+## 5. Operations & Monitoring
+
+### System Health & Performance
+
+| Artifact | Data Source | Extraction Method | Frequency | Audit Purpose |
+|----------|-------------|-------------------|-----------|---------------|
+| **System Availability Metrics** | OCI Monitoring | Metrics API | Daily | SLA compliance |
+| **Performance Degradation Events** | EPM Health Check | Status API | Real-time | Capacity planning |
+| **Resource Utilization Trends** | OCI Monitoring | Compute/Storage metrics | Weekly | Cost optimization |
+| **Error Log Analysis** | EPM System Logs | Log export / API | Daily | Incident root cause |
+| **Job Queue Status** | EPM Background Jobs | Job API | Daily | Batch processing audit |
+| **Long-Running Operations** | EPM Job History | Job API | Daily | Performance baseline |
+
+### Incident Management
+
+| Artifact | Data Source | Extraction Method | Frequency | Audit Purpose |
+|----------|-------------|-------------------|-----------|---------------|
+| **Incident Tickets** | ServiceNow/Jira | API integration | Real-time | Change correlation |
+| **Emergency Changes** | EPM/OCI | Audit API (flagged events) | Real-time | Emergency change tracking |
+| **Rollback Events** | EPM Versioning | Version API | Per event | Failed change recovery |
+| **Service Degradation** | OCI Status + EPM | Status page + API | Per event | Outage documentation |
+
+---
+
+## 6. Audit & Logging Infrastructure
+
+### Log Management
+
+| Artifact | Data Source | Extraction Method | Frequency | Audit Purpose |
+|----------|-------------|-------------------|-----------|---------------|
+| **OCI Audit Log Retention** | OCI Logging | Logging API | Weekly | Retention compliance |
+| **EPM Audit Trail Completeness** | EPM Security | Audit API sampling | Weekly | Log integrity check |
+| **Log Forwarding Status** | OCI Logging / SIEM | Service configuration | Daily | Centralized logging |
+| **Log Access Patterns** | OCI IAM | Audit API | Weekly | Privileged log access |
+| **Log Tampering Detection** | OCI Audit | Integrity checks | Weekly | Audit log protection |
+
+### Audit Automation
+
+| Artifact | Data Source | Extraction Method | Frequency | Audit Purpose |
+|----------|-------------|-------------------|-----------|---------------|
+| **Extraction Job Logs** | This automation | Internal logging | Every run | Automation audit trail |
+| **Dashboard Access** | SpudHub/OCI | Access logs | Weekly | Audit tool usage |
+| **Alert Acknowledgment** | Notification Systems | Alert API | Real-time | SOX exception workflow |
+| **Report Distribution** | Email/System | Distribution logs | Weekly | Evidence chain custody |
+
+---
+
+## Extraction Summary by Priority
+
+### Tier 1: Real-Time / Daily (Critical for Security)
+1. **IAM Events**: User provisioning/deprovisioning, group changes, MFA enrollments
+2. **Failed Access**: Login failures, privilege escalation attempts
+3. **Instance Changes**: Create/Delete EPM instances, scaling events
+4. **Emergency Changes**: Critical configuration modifications
+5. **Extraction Health**: Automation job status
+
+### Tier 2: Weekly (Operational)
+1. **Access Reviews**: Full user/group inventory, dormant accounts
+2. **Configuration Drift**: Security settings, network rules
+3. **Role Assignments**: Permission recertification
+4. **Resource Utilization**: Cost optimization, capacity planning
+5. **Certificate Validity**: Expiration monitoring
+
+### Tier 3: Monthly/Quarterly (Compliance)
+1. **SOX Evidence Package**: Aggregated control evidence
+2. **License Compliance**: Usage vs. entitlement
+3. **Disaster Recovery**: DR configuration validation
+4. **Vendor Access**: Third-party integration review
+5. **Policy Effectiveness**: IAM policy optimization
 
 ---
 
 ## Recommended Data Retention
 
-| Data Type | SOX Requirement | Recommendation |
-|-----------|-----------------|----------------|
-| Journal Entries | 7 years | 7+ years |
-| User Access Logs | 7 years | 7+ years |
-| Period Close Evidence | 7 years | Permanent |
-| Reconciliation Data | 7 years | 7+ years |
-| OCI Audit Logs | 1 year | 2+ years (store in Object Storage) |
-| System Config Changes | 7 years | 7+ years |
+| Data Type | Security Requirement | Recommendation |
+|-----------|---------------------|----------------|
+| IAM Audit Logs | 1 year minimum | 2+ years (store in OCI Object Storage) |
+| Login Activity | 90 days standard | 1+ year for security analysis |
+| Configuration Changes | 7 years (if SOX) | 7+ years with versioning |
+| System Performance Metrics | 30 days operational | 1+ year for trending |
+| Incident Records | Permanent | Permanent with attachments |
+| Automation Logs | 1 year | 2+ years for troubleshooting |
 
 ---
 
 ## Next Steps
 
-1. **Review this matrix** and add organization-specific customizations
-2. **Set up EPM Automate** or REST API access for each environment
-3. **Configure OCI IAM** for audit log access
-4. **Create extraction scripts** (see `/scripts/` directory)
-5. **Schedule automation** (recommend OCI Functions for cloud-native)
+1. **Prioritize Tier 1 extractions** for immediate security benefit
+2. **Set up real-time alerting** for IAM events to security team
+3. **Create weekly access review** report for managers
+4. **Build SOX evidence package** automation for quarterly compliance
+5. **Integrate with SIEM** for centralized security monitoring
 
 ---
 
-*Document Version: 1.0*
+*Document Version: 2.0 (System Admin Focus)*
 *Last Updated: 2026-02-26*
-*Owner: EPM Architecture Team*
+*Owner: IT Security & Infrastructure Team*
