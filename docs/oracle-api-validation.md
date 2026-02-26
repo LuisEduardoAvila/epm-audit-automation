@@ -543,6 +543,62 @@ SOX-Ready Evidence Package
 
 ---
 
+## Accessing Oracle Documentation
+
+You provided the documentation URL:  
+**https://docs.oracle.com/en/cloud/saas/enterprise-performance-management-common/prest/index.html**
+
+### Why Direct Web Fetch Failed
+
+Oracle's documentation site requires:
+- Browser cookie handling
+- JavaScript execution
+- Session-based authentication
+- Dynamic content loading
+
+This prevents programmatic access via simple HTTP requests.
+
+### Recommended Documentation Approach
+
+**Option 1: Browser + Export (Recommended)**
+1. Open the URL in your browser
+2. Navigate to REST API sections for each app
+3. Export as PDF: File → Print → Save as PDF
+4. Store in: `/docs/oracle-reference-pdfs/`
+
+**Option 2: Interactive API Explorer**
+Each EPM instance has Swagger/OpenAPI docs:
+```
+https://your-instance.epm.us-phoenix-1.oraclecloud.com/epm/apidocs/
+```
+
+This provides:
+- Available endpoints for your version
+- Required parameters
+- Request/response schemas
+- Test functionality
+
+**Option 3: REST Client Testing**
+Use Postman/Insomnia to:
+1. Import OpenAPI spec from your instance
+2. Test endpoints with your credentials
+3. Save working requests as collection
+4. Export for script development
+
+### Environment-Specific Validation
+
+Available APIs vary by:
+- EPM Cloud version (23.x, 24.x, 25.x)
+- Application patch level
+- Licensed modules
+
+**Always validate against YOUR instance's:**
+- Swagger docs (`/epm/apidocs/`)
+- API response schemas
+- Available endpoints list
+
+---
+
 *Last Updated: 2026-02-26*  
 *Oracle EPM Cloud Version: 24.x+ (approximate)*  
 *Status: Architecture validated, requires instance testing*
