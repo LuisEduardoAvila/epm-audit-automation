@@ -1,24 +1,9 @@
-# EPM Application Configuration System
+# EPM Application Configuration
+# 
+# Secure credential management and connection registry for Oracle EPM Cloud suite
+# See docs/credential-management.md for full documentation
 
-*Secure credential management and connection registry for Oracle EPM Cloud suite*
-
-## Design Principles
-
-1. **Security First**: Credentials never stored in plain text
-2. **Extensible**: Support any EPM application type (current + future)
-3. **Environment Segregation**: Strict separation of prod/test/dev
-4. **OAuth-Centric**: Modern authentication with token sharing
-5. **Multi-Tenant**: Support multiple instances of same app type
-
----
-
-## Application Registry Structure
-
-```yaml
-# config/applications.yaml
 applications:
-  # Application instances - any type, any environment
-  
   # ============================================
   # PRODUCTION ENVIRONMENT
   # ============================================
@@ -37,7 +22,6 @@ applications:
     authentication:
       method: "oauth2"
       credential_ref: "oci_vault://epm-oauth-production"
-      # Token can be shared with other prod apps
       token_scope: "production_suite"
       
     metadata:
@@ -68,7 +52,6 @@ applications:
     authentication:
       method: "oauth2"
       credential_ref: "oci_vault://epm-oauth-production"
-      # Same token as FCCS prod - shared scope
       token_scope: "production_suite"
       
     metadata:
@@ -107,7 +90,6 @@ applications:
     connection:
       base_url: "https://company-fccs.epm.us-phoenix-1.oraclecloud.com"
       region: "us-phoenix-1"
-      # Data Exchange shares FCCS URL
       
     authentication:
       method: "oauth2"
@@ -130,7 +112,7 @@ applications:
       method: "oauth2"
       credential_ref: "oci_vault://epm-oauth-production"
       token_scope: "production_suite"
-      
+
   # ============================================
   # TEST ENVIRONMENT
   # ============================================
@@ -147,7 +129,6 @@ applications:
       
     authentication:
       method: "oauth2"
-      # Separate credentials for test environment
       credential_ref: "oci_vault://epm-oauth-test"
       token_scope: "test_suite"
       
@@ -169,7 +150,7 @@ applications:
       method: "oauth2"
       credential_ref: "oci_vault://epm-oauth-test"
       token_scope: "test_suite"
-      
+
   # ============================================
   # DEVELOPMENT ENVIRONMENT
   # ============================================
@@ -199,32 +180,8 @@ applications:
       method: "oauth2"
       credential_ref: "oci_vault://epm-oauth-dev"
       token_scope: "development_suite"
-  
-  # ============================================
-  # FUTURE APPLICATIONS (Extensible)
-  # ============================================
-  
-  # Example: New app type not yet listed
-  nexus_prod:
-    name: "EPM Nexus Production"
-    type: "NEXUS"  # Custom/new app type
-    environment: "production"
-    
-    connection:
-      base_url: "https://company-nexus.epm.us-phoenix-1.oraclecloud.com"
-      
-    authentication:
-      method: "oauth2"
-      credential_ref: "oci_vault://epm-oauth-production"
-      token_scope: "production_suite"
-      
-    metadata:
-      description: "Future EPM Application"
-      custom_field_1: "value"
-      custom_field_2: "value"
 
 # Application Type Registry
-# Defines supported types and their properties
 types:
   FCCS:
     name: "Financial Consolidation and Close"
@@ -313,12 +270,6 @@ types:
     audit_endpoints:
       - allocations
       - stages
-      
-  # Extensible - add new types as needed
-  CUSTOM:
-    name: "Custom EPM Application"
-    modules: []
-    audit_endpoints: []
 
 # Environment Definitions
 environments:

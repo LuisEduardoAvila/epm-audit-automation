@@ -490,14 +490,14 @@ class CredentialManager:
                 'name': app['name'],
                 'type': app['type'],
                 'environment': app['environment'],
-                'criticality': app['metadata'].get('criticality', 'medium')
+                'criticality': app.get('metadata', {}).get('criticality', 'medium')
             })
         return apps
     
     def is_sox_relevant(self, app_id: str) -> bool:
         """Check if application is SOX-relevant"""
         app = self.get_application(app_id)
-        return app['metadata'].get('sox_relevant', False)
+        return app.get('metadata', {}).get('sox_relevant', False)
     
     def get_audit_schedule(self, app_id: str) -> Dict:
         """Get audit schedule for application"""
