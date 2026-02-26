@@ -1,0 +1,422 @@
+# EPM Application Configuration System
+
+*Secure credential management and connection registry for Oracle EPM Cloud suite*
+
+## Design Principles
+
+1. **Security First**: Credentials never stored in plain text
+2. **Extensible**: Support any EPM application type (current + future)
+3. **Environment Segregation**: Strict separation of prod/test/dev
+4. **OAuth-Centric**: Modern authentication with token sharing
+5. **Multi-Tenant**: Support multiple instances of same app type
+
+---
+
+## Application Registry Structure
+
+```yaml
+# config/applications.yaml
+applications:
+  # Application instances - any type, any environment
+  
+  # ============================================
+  # PRODUCTION ENVIRONMENT
+  # ============================================
+  
+  fccs_prod:
+    name: "FCCS Production"
+    type: "FCCS"
+    environment: "production"
+    
+    connection:
+      base_url: "https://company-fccs.epm.us-phoenix-1.oraclecloud.com"
+      region: "us-phoenix-1"
+      tenant: "company"
+      service: "fccs"
+    
+    authentication:
+      method: "oauth2"
+      credential_ref: "oci_vault://epm-oauth-production"
+      # Token can be shared with other prod apps
+      token_scope: "production_suite"
+      
+    metadata:
+      description: "Financial Consolidation - Global"
+      owner: "finance-team@company.com"
+      criticality: "high"
+      sox_relevant: true
+      last_validated: "2026-02-26"
+      
+    modules:
+      - journals
+      - consolidation
+      - supplemental_data
+      - intercompany
+      - task_manager
+      
+  pbcs_prod:
+    name: "PBCS Production"
+    type: "PBCS"
+    environment: "production"
+    
+    connection:
+      base_url: "https://company-pbcs.epm.us-phoenix-1.oraclecloud.com"
+      region: "us-phoenix-1"
+      tenant: "company"
+      service: "pbcs"
+    
+    authentication:
+      method: "oauth2"
+      credential_ref: "oci_vault://epm-oauth-production"
+      # Same token as FCCS prod - shared scope
+      token_scope: "production_suite"
+      
+    metadata:
+      description: "Planning - Annual Budget"
+      owner: "planning-team@company.com"
+      criticality: "high"
+      sox_relevant: true
+      
+  edm_prod:
+    name: "EDM Production"
+    type: "EDM"
+    environment: "production"
+    
+    connection:
+      base_url: "https://company-edm.epm.us-phoenix-1.oraclecloud.com"
+      region: "us-phoenix-1"
+      tenant: "company"
+      service: "edm"
+    
+    authentication:
+      method: "oauth2"
+      credential_ref: "oci_vault://epm-oauth-production"
+      token_scope: "production_suite"
+      
+    metadata:
+      description: "Master Data Management - Global"
+      owner: "data-governance@company.com"
+      criticality: "critical"
+      sox_relevant: true
+      
+  dataexchange_prod:
+    name: "Data Exchange Production"
+    type: "DATA_EXCHANGE"
+    environment: "production"
+    
+    connection:
+      base_url: "https://company-fccs.epm.us-phoenix-1.oraclecloud.com"
+      region: "us-phoenix-1"
+      # Data Exchange shares FCCS URL
+      
+    authentication:
+      method: "oauth2"
+      credential_ref: "oci_vault://epm-oauth-production"
+      token_scope: "production_suite"
+      
+    metadata:
+      description: "Data Integration - All Apps"
+      owner: "integration-team@company.com"
+      
+  arcs_prod:
+    name: "ARCS Production"
+    type: "ARCS"
+    environment: "production"
+    
+    connection:
+      base_url: "https://company-arcs.epm.us-phoenix-1.oraclecloud.com"
+      
+    authentication:
+      method: "oauth2"
+      credential_ref: "oci_vault://epm-oauth-production"
+      token_scope: "production_suite"
+      
+  # ============================================
+  # TEST ENVIRONMENT
+  # ============================================
+  
+  fccs_test:
+    name: "FCCS Test"
+    type: "FCCS"
+    environment: "test"
+    
+    connection:
+      base_url: "https://company-fccs-test.epm.us-phoenix-1.oraclecloud.com"
+      region: "us-phoenix-1"
+      tenant: "company-test"
+      
+    authentication:
+      method: "oauth2"
+      # Separate credentials for test environment
+      credential_ref: "oci_vault://epm-oauth-test"
+      token_scope: "test_suite"
+      
+    metadata:
+      description: "FCCS - Testing Environment"
+      owner: "epm-team@company.com"
+      criticality: "medium"
+      sox_relevant: false
+      
+  pbcs_test:
+    name: "PBCS Test"
+    type: "PBCS"
+    environment: "test"
+    
+    connection:
+      base_url: "https://company-pbcs-test.epm.us-phoenix-1.oraclecloud.com"
+      
+    authentication:
+      method: "oauth2"
+      credential_ref: "oci_vault://epm-oauth-test"
+      token_scope: "test_suite"
+      
+  # ============================================
+  # DEVELOPMENT ENVIRONMENT
+  # ============================================
+  
+  fccs_dev:
+    name: "FCCS Development"
+    type: "FCCS"
+    environment: "development"
+    
+    connection:
+      base_url: "https://company-fccs-dev.epm.us-phoenix-1.oraclecloud.com"
+      
+    authentication:
+      method: "oauth2"
+      credential_ref: "oci_vault://epm-oauth-dev"
+      token_scope: "development_suite"
+      
+  pbcs_dev:
+    name: "PBCS Development"
+    type: "PBCS"
+    environment: "development"
+    
+    connection:
+      base_url: "https://company-pbcs-dev.epm.us-phoenix-1.oraclecloud.com"
+      
+    authentication:
+      method: "oauth2"
+      credential_ref: "oci_vault://epm-oauth-dev"
+      token_scope: "development_suite"
+  
+  # ============================================
+  # FUTURE APPLICATIONS (Extensible)
+  # ============================================
+  
+  # Example: New app type not yet listed
+  nexus_prod:
+    name: "EPM Nexus Production"
+    type: "NEXUS"  # Custom/new app type
+    environment: "production"
+    
+    connection:
+      base_url: "https://company-nexus.epm.us-phoenix-1.oraclecloud.com"
+      
+    authentication:
+      method: "oauth2"
+      credential_ref: "oci_vault://epm-oauth-production"
+      token_scope: "production_suite"
+      
+    metadata:
+      description: "Future EPM Application"
+      custom_field_1: "value"
+      custom_field_2: "value"
+
+# Application Type Registry
+# Defines supported types and their properties
+types:
+  FCCS:
+    name: "Financial Consolidation and Close"
+    modules:
+      - journals
+      - consolidation
+      - supplemental_data
+      - intercompany
+      - task_manager
+      - enterprise_journals
+    audit_endpoints:
+      - artifact_updates
+      - journals
+      - consolidation_rules
+      - dimensions
+      
+  PBCS:
+    name: "Planning and Budgeting"
+    modules:
+      - forms
+      - business_rules
+      - approval_workflows
+      - task_lists
+      - security_filters
+    audit_endpoints:
+      - artifact_updates
+      - rules
+      - forms
+      - approvals
+      
+  EDM:
+    name: "Enterprise Data Management"
+    modules:
+      - requests
+      - views
+      - nodes
+      - mappings
+      - policies
+    audit_endpoints:
+      - requests
+      - deployments
+      - violations
+      
+  DATA_EXCHANGE:
+    name: "Data Exchange"
+    modules:
+      - load_rules
+      - mappings
+      - executions
+      - imports
+      - exports
+    audit_endpoints:
+      - load_rules
+      - executions
+      - error_logs
+      
+  ARCS:
+    name: "Account Reconciliation"
+    modules:
+      - reconciliations
+      - formats
+      - profiles
+      - matching_rules
+    audit_endpoints:
+      - reconciliations
+      - profiles
+      - transactions
+      
+  TRCS:
+    name: "Tax Reporting"
+    modules:
+      - tax_provision
+      - returns
+      - compliance
+    audit_endpoints:
+      - provisions
+      - adjustments
+      
+  PCM:
+    name: "Profitability and Cost Management"
+    modules:
+      - allocations
+      - stages
+      - drivers
+      - traceability
+    audit_endpoints:
+      - allocations
+      - stages
+      
+  # Extensible - add new types as needed
+  CUSTOM:
+    name: "Custom EPM Application"
+    modules: []
+    audit_endpoints: []
+
+# Environment Definitions
+environments:
+  production:
+    name: "Production"
+    description: "Live production systems"
+    security_level: "high"
+    change_control: "strict"
+    sox_relevant: true
+    backup_required: true
+    dr_replicated: true
+    
+  test:
+    name: "Test/QA"
+    description: "Testing and validation environment"
+    security_level: "medium"
+    change_control: "standard"
+    sox_relevant: false
+    backup_required: false
+    refresh_from_prod: true
+    
+  development:
+    name: "Development"
+    description: "Development and experimentation"
+    security_level: "low"
+    change_control: "relaxed"
+    sox_relevant: false
+    backup_required: false
+    auto_refresh: false
+
+# OAuth Configuration
+oauth:
+  production_suite:
+    name: "Production Suite OAuth"
+    description: "Shared OAuth for all production EPM apps"
+    token_url: "https://idcs-xyz.identity.oraclecloud.com/oauth2/v1/token"
+    client_id_ref: "oci_vault://oauth-client-id-prod"
+    client_secret_ref: "oci_vault://oauth-client-secret-prod"
+    scope: "urn:opc:idm:tac.scope.epm"
+    applications:
+      - fccs_prod
+      - pbcs_prod
+      - edm_prod
+      - dataexchange_prod
+      - arcs_prod
+      
+  test_suite:
+    name: "Test Suite OAuth"
+    description: "Shared OAuth for all test EPM apps"
+    token_url: "https://idcs-xyz.identity.oraclecloud.com/oauth2/v1/token"
+    client_id_ref: "oci_vault://oauth-client-id-test"
+    client_secret_ref: "oci_vault://oauth-client-secret-test"
+    scope: "urn:opc:idm:tac.scope.epm"
+    applications:
+      - fccs_test
+      - pbcs_test
+      
+  development_suite:
+    name: "Development Suite OAuth"
+    description: "Shared OAuth for all dev EPM apps"
+    token_url: "https://idcs-xyz.identity.oraclecloud.com/oauth2/v1/token"
+    client_id_ref: "oci_vault://oauth-client-id-dev"
+    client_secret_ref: "oci_vault://oauth-client-secret-dev"
+    scope: "urn:opc:idm:tac.scope.epm"
+    applications:
+      - fccs_dev
+      - pbcs_dev
+
+# Audit Configuration
+audit:
+  default_schedule:
+    production:
+      artifact_report: "daily 02:00"
+      security_report: "weekly sunday 03:00"
+      access_review: "monthly 1st 04:00"
+      
+    test:
+      artifact_report: "weekly monday 02:00"
+      security_report: "weekly monday 03:00"
+      
+    development:
+      artifact_report: "on_demand"
+      security_report: "on_demand"
+      
+  retention:
+    production: "7_years"
+    test: "1_year"
+    development: "90_days"
+    
+  alerting:
+    production:
+      sox_critical: "immediate_email"
+      material_changes: "daily_digest"
+      operational: "weekly_summary"
+      
+    test:
+      sox_critical: "daily_digest"
+      material_changes: "weekly_summary"
+      
+    development:
+      all: "weekly_summary"
