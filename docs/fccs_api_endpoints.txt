@@ -1,0 +1,362 @@
+Financial Consolidation and Close REST APIs
+URL Structure for Financial Consolidation and Close
+
+1
+
+Getting API Versions for Financial Consolidation and Close APIs
+
+1
+
+Get Information about a Specific API Version for Financial Consolidation and Close APIs
+
+19
+
+20
+
+1
+
+Perform Journal Actions for Financial Consolidation and Close
+
+3
+
+Perform Journal Period Updates for Financial Consolidation and Close
+
+5
+
+Retrieve Journals for Financial Consolidation and Close
+
+7
+
+Retrieve Journal Details for Financial Consolidation and Close
+
+10
+
+Export Consolidation Journals
+
+13
+
+Import Consolidation Journals
+
+15
+
+Copy Data
+
+17
+
+Clear Data
+
+19
+
+Validate Metadata
+
+21
+
+Export Configurable Consolidation Rulesets
+
+22
+
+Import Configurable Consolidation Rulesets
+
+23
+
+Generate an Intercompany Matching Report
+
+25
+
+Task Manager REST APIs
+URL Structure for Task Manager
+
+1
+
+Getting API Versions for Task Manager APIs
+
+1
+
+Deploy Task Manager Templates
+
+2
+
+Update Task Status for Event Monitoring
+
+5
+
+Working with Connections in Task Manager
+
+8
+
+Create a Connection
+
+8
+
+View All Connections
+
+11
+
+Update a Connection
+
+13
+
+Delete a Connection
+
+16
+
+Supplemental Data Manager REST APIs
+URL Structure for Supplemental Data Manager
+
+1
+
+Getting API Versions for Supplemental Data Manager APIs
+
+1
+
+Import Supplemental Collection Data for Financial Consolidation and Close
+
+2
+
+Deploy Form Templates
+
+5
+
+Execute Supplemental Data Manager Job
+
+10
+
+REST APIs for Oracle Fusion Cloud EPM
+G42939-02
+Copyright © 2017, 2025, Oracle and/or its affiliates.
+
+November 6, 2025
+Page x of xiii
+
+21
+
+22
+
+Enterprise Journal REST APIs
+URL Structure for Enterprise Journal REST APIs
+
+1
+
+Getting API Versions for Enterprise Journal APIs
+
+1
+
+Monitor Enterprise Journals for Financial Consolidation and Close
+
+2
+
+Execute an Enterprise Journals Job
+
+4
+
+Retrieve Enterprise Journals for Financial Consolidation and Close
+
+12
+
+Retrieve Enterprise Journal Content for Financial Consolidation and Close
+
+14
+
+Retrieve Enterprise Journal Content by Year and Period for Financial Consolidation and
+Close
+
+16
+
+Update Enterprise Journal Posting Status for Financial Consolidation and Close
+
+18
+
+Update Validation Status of Enterprise Journals for Financial Consolidation and Close
+
+20
+
+Tax Reporting REST APIs
+URL Structure for Tax Reporting
+
+1
+
+Getting API Versions for Tax Reporting APIs
+
+1
+
+Get Information about a Specific API Version for Tax Reporting
+
+23
+
+24
+
+1
+
+Copy Data
+
+2
+
+Clear Data
+
+4
+
+Enterprise Profitability and Cost Management REST APIs
+URL Structure for Enterprise Profitability and Cost Management
+
+1
+
+Getting API Versions for Enterprise Profitability and Cost Management
+
+2
+
+Getting Information About a Specific REST API Version for Enterprise Profitability and Cost
+Management
+
+2
+
+Using Substitution Variables in Enterprise Profitability and Cost Management REST APIs
+
+3
+
+Calculate Model
+
+4
+
+Clear Data By Point of View
+
+8
+
+Copy Data by Point of View
+
+11
+
+Delete Point of View
+
+14
+
+Generate Model Documentation Report
+
+18
+
+Validate Model
+
+20
+
+Profitability and Cost Management REST APIs
+URL Structure for Profitability and Cost Management
+
+2
+
+Get API Versions for Profitability and Cost Management REST APIs
+
+2
+
+Get Information about a Specific API Version for Profitability and Cost Management
+
+5
+
+Apply Data Grants
+
+7
+
+Copy ML POV Data
+
+9
+
+Create File-Based Application
+
+13
+
+REST APIs for Oracle Fusion Cloud EPM
+G42939-02
+Copyright © 2017, 2025, Oracle and/or its affiliates.
+
+November 6, 2025
+Page xi of xiii
+
+Deploy ML Cube
+
+16
+
+Enable File-Based Application
+
+19
+
+Essbase Data Load for Profitability and Cost Management
+
+22
+
+Export Query Results
+
+25
+
+Export Template for Profitability and Cost Management
+
+28
+
+Generate Program Documentation Report
+
+31
+
+Generate Program Documentation Report - Run as a Job
+
+35
+
+Import Template for Profitability and Cost Management
+
+39
+
+Merge Slices for Profitability and Cost Management
+
+42
+
+Optimize ASO Cube
+
+43
+
+Retrieve Task Status for Profitability and Cost Management
+
+47
+
+Run ML Calculations
+
+48
+
+Run ML Clear POV
+
+52
+
+Run ML Rule Balancing
+
+56
+
+Update Dimensions As a Job
+
+60
+
+25
+
+Narrative Reporting REST APIs
+
+26
+
+Enterprise Data Management Cloud REST APIs
+
+27
+
+Support for IAM REST APIs
+
+A
+
+Common Helper Functions for Java
+
+B
+
+CSS Common Helper Functions for Java
+
+C
+
+Common Helper Functions for cURL
+
+D
+
+CSS Common Helper Functions for cURL
+
+E
+
+CSS Common Helper Functions for Groovy

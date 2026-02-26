@@ -1,0 +1,1000 @@
+Oracle® Fusion Cloud EPM
+REST APIs for Oracle Fusion Cloud EPM
+
+G42939-02
+
+Oracle Fusion Cloud EPM REST APIs for Oracle Fusion Cloud EPM,
+G42939-02
+Copyright © 2017, 2025, Oracle and/or its affiliates.
+Primary Author: EPM Information Development Team
+This software and related documentation are provided under a license agreement containing restrictions on use and
+disclosure and are protected by intellectual property laws. Except as expressly permitted in your license agreement or
+allowed by law, you may not use, copy, reproduce, translate, broadcast, modify, license, transmit, distribute, exhibit,
+perform, publish, or display any part, in any form, or by any means. Reverse engineering, disassembly, or decompilation
+of this software, unless required by law for interoperability, is prohibited.
+The information contained herein is subject to change without notice and is not warranted to be error-free. If you find
+any errors, please report them to us in writing.
+If this is software, software documentation, data (as defined in the Federal Acquisition Regulation), or related
+documentation that is delivered to the U.S. Government or anyone licensing it on behalf of the U.S. Government, then
+the following notice is applicable:
+U.S. GOVERNMENT END USERS: Oracle programs (including any operating system, integrated software, any
+programs embedded, installed, or activated on delivered hardware, and modifications of such programs) and Oracle
+computer documentation or other Oracle data delivered to or accessed by U.S. Government end users are "commercial
+computer software," "commercial computer software documentation," or "limited rights data" pursuant to the applicable
+Federal Acquisition Regulation and agency-specific supplemental regulations. As such, the use, reproduction,
+duplication, release, display, disclosure, modification, preparation of derivative works, and/or adaptation of i) Oracle
+programs (including any operating system, integrated software, any programs embedded, installed, or activated on
+delivered hardware, and modifications of such programs), ii) Oracle computer documentation and/or iii) other Oracle
+data, is subject to the rights and limitations specified in the license contained in the applicable contract. The terms
+governing the U.S. Government's use of Oracle cloud services are defined by the applicable contract for such services.
+No other rights are granted to the U.S. Government.
+This software or hardware is developed for general use in a variety of information management applications. It is not
+developed or intended for use in any inherently dangerous applications, including applications that may create a risk of
+personal injury. If you use this software or hardware in dangerous applications, then you shall be responsible to take all
+appropriate fail-safe, backup, redundancy, and other measures to ensure its safe use. Oracle Corporation and its
+affiliates disclaim any liability for any damages caused by use of this software or hardware in dangerous applications.
+Oracle®, Java, MySQL, and NetSuite are registered trademarks of Oracle and/or its affiliates. Other names may be
+trademarks of their respective owners.
+Intel and Intel Inside are trademarks or registered trademarks of Intel Corporation. All SPARC trademarks are used
+under license and are trademarks or registered trademarks of SPARC International, Inc. AMD, Epyc, and the AMD logo
+are trademarks or registered trademarks of Advanced Micro Devices. UNIX is a registered trademark of The Open
+Group.
+This software or hardware and documentation may provide access to or information about content, products, and
+services from third parties. Oracle Corporation and its affiliates are not responsible for and expressly disclaim all
+warranties of any kind with respect to third-party content, products, and services unless otherwise set forth in an
+applicable agreement between you and Oracle. Oracle Corporation and its affiliates will not be responsible for any loss,
+costs, or damages incurred due to your access to or use of third-party content, products, or services, except as set forth
+in an applicable agreement between you and Oracle.
+
+Contents
+Documentation Accessibility
+Documentation Feedback
+
+1
+
+Creating and Running an EPM Center of Excellence
+
+2
+
+Implementation Best Practices for Cloud EPM REST APIs
+
+3
+
+About the REST APIs for Cloud EPM
+
+4
+
+5
+
+About REST APIs for Oracle Fusion Cloud EPM
+
+1
+
+Cloud EPM REST API Compatibility
+
+2
+
+About the Samples
+
+15
+
+Audience
+
+15
+
+Prerequisites
+
+16
+
+URL Structure
+
+16
+
+OAuth 2 and Basic Authentication for Cloud EPM REST APIs
+Authentication with OAuth 2
+
+1
+
+Basic Authentication
+
+10
+
+Sample Integration Scenarios
+Scenario 1: Import Metadata into Applications
+
+1
+
+Scenario 2: Import Data, Run a Calculation Script, and Copy Data from a Block Storage
+Database to an Aggregate Storage Database
+
+2
+
+Scenario 3: Export and Download Metadata and Data
+
+3
+
+Scenario 4: Remove Unnecessary Files from a Service Instance
+
+4
+
+Scenario 5: Archive Backups from the Service to Onpremise
+
+4
+
+Scenario 6: Refreshing the Application
+
+5
+
+REST APIs for Oracle Fusion Cloud EPM
+G42939-02
+Copyright © 2017, 2025, Oracle and/or its affiliates.
+
+November 6, 2025
+Page i of xiii
+
+Scenario 7: Cloning an Instance
+
+6
+
+Scenario 8: Sample Starter Kit for Consultants - Business Intelligence Cloud Integration
+
+6
+
+Scenario 9: Using Groovy Business Rules to Call REST APIs from Oracle and Other
+Companies
+
+7
+
+6
+
+Quick Reference Table – REST API Resource View
+
+7
+
+REST Resources and Methods
+
+8
+
+Supported REST Methods
+
+1
+
+REST API Methods
+
+2
+
+Error Handling
+
+2
+
+Versioning
+
+2
+
+Current REST API Version
+
+3
+
+Status Codes
+
+3
+
+Planning REST APIs
+URL Structure for Planning
+
+2
+
+Resources and Available Actions
+
+2
+
+Getting API Versions for Planning
+
+3
+
+Get REST API Versions for Planning
+
+3
+
+Get Information about a Specific REST API Version for Planning
+
+5
+
+Manage Jobs
+
+6
+
+Get Job Definitions
+
+7
+
+Execute a Job
+
+9
+
+Rules
+
+12
+
+Ruleset
+
+13
+
+Plan Type Map
+
+19
+
+Import Data
+
+21
+
+Export Data
+
+25
+
+Import Metadata
+
+30
+
+Export Metadata
+
+31
+
+Cube Refresh
+
+32
+
+Clear Cube
+
+33
+
+Administration Mode
+
+36
+
+Compact Cube
+
+37
+
+Restructure Cube
+
+38
+
+Merge Data Slices
+
+39
+
+Optimize Aggregation
+
+40
+
+Import Security
+
+42
+
+Export Security
+
+45
+
+REST APIs for Oracle Fusion Cloud EPM
+G42939-02
+Copyright © 2017, 2025, Oracle and/or its affiliates.
+
+November 6, 2025
+Page ii of xiii
+
+Export Audit
+
+47
+
+Export Job Console
+
+51
+
+Sort Members
+
+55
+
+Import Exchange Rates
+
+57
+
+Auto Predict
+
+59
+
+Import Cell-Level Security
+
+61
+
+Export Cell-Level Security
+
+63
+
+Import Valid Intersections
+
+66
+
+Export Valid Intersections
+
+68
+
+Execute a Report Bursting Definition
+
+71
+
+Export Library Documents
+
+72
+
+Import Library Documents
+
+76
+
+Delete Library Documents
+
+78
+
+Configure the Oracle Guided Learning (OGL) Server
+
+81
+
+Execute Job Code Samples
+
+82
+
+Retrieve Job Status
+
+84
+
+Retrieve Job Status Details
+
+86
+
+Retrieve Child Job Status Details
+
+89
+
+List Library Documents
+
+91
+
+Working with Members
+
+95
+
+Add Member
+
+95
+
+Get Member
+
+97
+
+Get Applications
+
+98
+
+Manage Planning Units
+
+101
+
+List All Planning Units
+
+102
+
+Get Planning Unit History and Annotations
+
+105
+
+Get a Planning Unit Owner Photo
+
+107
+
+Get Planning Unit Promotional Path
+
+109
+
+Get Available Planning Unit Actions
+
+110
+
+Get Filters with All Possible Values
+
+112
+
+Change Planning Unit Status
+
+114
+
+Get User Preferences
+
+115
+
+Working with Data Slices
+
+117
+
+Import Data Slices
+
+117
+
+Export Data Slices
+
+124
+
+Clear Data Slices
+
+134
+
+Managing User Variables
+
+138
+
+Get All User Variables
+
+138
+
+Get a User Variable Using Its ID
+
+140
+
+Create User Variables
+
+141
+
+Update User Variables
+
+143
+
+Delete a User Variable
+
+144
+
+REST APIs for Oracle Fusion Cloud EPM
+G42939-02
+Copyright © 2017, 2025, Oracle and/or its affiliates.
+
+November 6, 2025
+Page iii of xiii
+
+Delete User Variable Definitions
+
+145
+
+Getting and Setting Substitution Variables
+
+146
+
+Get All Substitution Variables Defined for the Application
+
+147
+
+Get a Substitution Variable Defined for the Application
+
+148
+
+Create or Update All Substitution Variables Defined for the Application
+
+149
+
+Get Substitution Variables Defined at the Plan Type Level
+
+151
+
+Get Derived Substitution Variables at the Plan Type Level
+
+152
+
+Get a Substitution Variable Defined at the Plan Type Level
+
+153
+
+Get a Derived Substitution Variable Defined at the Plan Type Level
+
+154
+
+Create and Update Substitution Variables at the Plan Type Level
+
+156
+
+Deleting Substitution Variables
+Delete a Substitution Variable at the Plan Type Level
+
+157
+
+Delete a Substitution Variable for the Application
+
+158
+
+Delete Substitution Variables at the Plan Type Level
+
+159
+
+Delete Substitution Variables for the Application
+
+160
+
+Getting and Setting User Variable Values
+
+9
+
+157
+
+162
+
+Get User Variable Values Defined for the Application
+
+163
+
+Get User Variable Values Defined in the Application by the User Variable Name
+
+165
+
+Get User Variable Values Defined in the Application by Value
+
+166
+
+Get User Variable Values Defined for the Application by the User Name
+
+168
+
+Get User Variable Values Defined in the Application by the User Name and Value
+
+170
+
+Set the User Variable Values for the Application
+
+172
+
+Working with Connections
+
+173
+
+View a Connection
+
+174
+
+View All Connections
+
+175
+
+Update a Connection
+
+178
+
+Migration REST APIs
+URL Structure for Migration
+
+1
+
+Migration Status Codes
+
+2
+
+Getting API Versions for Migration APIs
+
+2
+
+Get REST API Versions for Migration
+
+2
+
+Get Information About a Specific REST API Version for Migration
+
+6
+
+Import and Export Files
+
+9
+
+LCM Import (v1)
+
+9
+
+LCM Import (v2)
+
+15
+
+LCM Export (v1)
+
+20
+
+LCM Export (v2)
+
+25
+
+Upload and Download Files
+
+29
+
+Upload
+
+29
+
+Download
+
+35
+
+REST APIs for Oracle Fusion Cloud EPM
+G42939-02
+Copyright © 2017, 2025, Oracle and/or its affiliates.
+
+November 6, 2025
+Page iv of xiii
+
+View and Delete Files
+
+39
+
+List Files (v11.1.2.3.600)
+
+39
+
+List Files (v2)
+
+43
+
+Delete Files (v11.1.2.3.600)
+
+45
+
+Delete Files (v2)
+
+48
+
+Delete Files (v3)
+
+50
+
+Manage Services
+
+51
+
+Get Information About All Services
+
+52
+
+Get Idle Session Timeout
+
+55
+
+Set Idle Session Timeout
+
+57
+
+Restart the Service Instance (v1)
+
+58
+
+Restart the Service Instance (v2)
+
+62
+
+Run Recreate on a Service (11.1.2.3.600)
+
+76
+
+Run Recreate on a Service (v2)
+
+82
+
+Manage Application Snapshots
+
+97
+
+Get Information About All Application Snapshots
+
+98
+
+Get Information About a Specific Application Snapshot
+
+100
+
+Upload Application Snapshot (v1)
+
+104
+
+Upload Application Snapshot (v2)
+
+107
+
+Download Application Snapshot (v1)
+
+112
+
+Download Application Snapshot (v2)
+
+122
+
+Copy Application Snapshot (v1)
+
+126
+
+Copy Application Snapshot (v2)
+
+131
+
+Rename Application Snapshot (v1)
+
+133
+
+Rename Application Snapshot (v2)
+
+134
+
+Copy to and from the Object Store
+
+136
+
+Copy from Object Store (v1)
+
+136
+
+Copy from Object Store (v2)
+
+139
+
+Copy from Object Store (v3)
+
+143
+
+Copy to Object Store (v1)
+
+145
+
+Copy to Object Store (v2)
+
+149
+
+Copy To Object Store (v3)
+
+153
+
+Copy to and from SFTP
+
+155
+
+Copy to SFTP
+
+156
+
+Copy from SFTP
+
+158
+
+Working with Essbase
+
+161
+
+Export Essbase Data (v2)
+
+161
+
+Essbase Block Analysis Report
+
+164
+
+Get Essbase Query Governor Execution Time
+
+166
+
+Set Essbase Query Governor Execution Time
+
+167
+
+Copy a File Between Instances (v1)
+
+168
+
+Copy a File Between Instances (v2)
+
+170
+
+REST APIs for Oracle Fusion Cloud EPM
+G42939-02
+Copyright © 2017, 2025, Oracle and/or its affiliates.
+
+November 6, 2025
+Page v of xiii
+
+10
+
+11
+
+12
+
+Clone an Environment
+
+172
+
+Provide Feedback (v11.1.2.3.600)
+
+178
+
+Provide Feedback (v2)
+
+181
+
+Send Email (v1)
+
+183
+
+Send Email (v2)
+
+185
+
+Skip Updates (v1)
+
+188
+
+Skip Updates (v2)
+
+190
+
+List or Restore Backups
+
+192
+
+List Backups
+
+192
+
+Restore Backups
+
+194
+
+Security REST APIs
+URL Structure for Security
+
+1
+
+Get Restricted Data Access
+
+2
+
+Set Restricted Data Access
+
+3
+
+Get Virus Scan on File Upload
+
+5
+
+Set Virus Scan on File Upload
+
+7
+
+Manage Permission for Manual Access to Database (v1)
+
+8
+
+Manage Permission for Manual Access to Database (v2)
+
+10
+
+Set Encryption Key (v1)
+
+12
+
+Set Encryption Key (v2)
+
+15
+
+View or Update the IP Allowlist (Deprecated)
+
+17
+
+View the IP Allowlist (Deprecated)
+
+17
+
+Update the IP Allowlist (Deprecated)
+
+19
+
+Viewing and Setting the Daily Maintenance Window Time
+URL Structure for Daily Maintenance
+
+1
+
+Get the Build Version and Daily Maintenance Time (v1)
+
+2
+
+Get the Build Version and Daily Maintenance Window Time (v2)
+
+5
+
+Setting the Daily Maintenance Time (v1)
+
+7
+
+Setting the Daily Maintenance Time (v2)
+
+10
+
+Running Daily Maintenance While Skipping the Scheduled Daily Maintenance (v1)
+
+12
+
+Running Daily Maintenance While Skipping the Scheduled Daily Maintenance (v2)
+
+16
+
+Managing Users, Groups, and Roles
+URL Structure for Users, Groups, and Roles
+
+3
+
+Add Users to an Identity Domain (v1)
+
+3
+
+Add Users to an Identity Domain (v2)
+
+9
+
+Remove Users from an Identity Domain (v1)
+
+13
+
+REST APIs for Oracle Fusion Cloud EPM
+G42939-02
+Copyright © 2017, 2025, Oracle and/or its affiliates.
+
+November 6, 2025
+Page vi of xiii
+
+Remove Users from an Identity Domain (v2)
+
+17
+
+Assign Users to a Predefined Role or Application Role (v1)
+
+20
+
+Assign Users to a Predefined Role or Application Role (v2)
+
+25
+
+Remove Users' Role Assignment (v1)
+
+29
+
+Remove Users' Role Assignment (v2)
+
+37
+
+Add Users to a Group (v1)
+
+43
+
+Add Users to a Group (v2)
+
+48
+
+Remove Users from a Group (v1)
+
+52
+
+Remove Users from a Group (v2)
+
+56
+
+List Users
+
+60
+
+Update Users (v1)
+
+64
+
+Update Users (v2)
+
+69
+
+Add a User to a Batch of Groups
+
+72
+
