@@ -1,0 +1,211 @@
+# EPM Audit Automation Configuration
+# 
+# Copy this file and fill in your environment details.
+# DO NOT commit actual credentials to git!
+
+# =============================================================================
+# OCI Configuration
+# =============================================================================
+# Required for OCI audit log extraction
+# 
+# Prerequisites:
+# 1. Install OCI CLI: https://docs.oracle.com/en-us/iaas/Content/API/SDKDocs/cliinstall.htm
+# 2. Run: oci setup config
+# 3. Note your compartment OCID (usually starts with ocid1.compartment.oc1..)
+
+oci:
+  # Path to OCI config file (default is ~/.oci/config)
+  config_file: ~/.oci/config
+  
+  # Config profile to use
+  profile: DEFAULT
+  
+  # Root compartment or EPM-specific compartment OCID
+  compartment_ocid: "ocid1.compartment.oc1..xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+
+# =============================================================================
+# FCCS Environments
+# =============================================================================
+fccs:
+  production:
+    url: "https://your-company-fccs.epm.us-phoenix-1.ocs.oraclecloud.com"
+    username: "your-service-account@company.com"
+    # For production, use OCI Vault or encrypted file
+    password_source: "OCI_VAULT"  # Options: OCI_VAULT, ENV_VAR, KEYRING
+    password_ref: "ocid1.vaultsecret.oc1..xxxxxxxx"  # OCI Vault Secret OCID
+    application: "FCCS_Production"
+    api_version: "v1"
+    
+  test:
+    url: "https://your-company-fccs-test.epm.us-phoenix-1.ocs.oraclecloud.com"
+    username: "your-test-account@company.com"
+    password_source: "ENV_VAR"
+    password_ref: "FCCS_TEST_PASSWORD"  # Environment variable name
+    application: "FCCS_Test"
+    api_version: "v1"
+
+# =============================================================================
+# PBCS Environments  
+# =============================================================================
+pbcs:
+  production:
+    url: "https://your-company-pbcs.epm.us-phoenix-1.ocs.oraclecloud.com"
+    username: "your-service-account@company.com"
+    password_source: "OCI_VAULT"
+    password_ref: "ocid1.vaultsecret.oc1..xxxxxxxx"
+    application: "PBCS_Production"
+    api_version: "v1"
+
+# =============================================================================
+# EDM Configuration
+# =============================================================================
+edm:
+  production:
+    url: "https://your-company-edm.epm.us-phoenix-1.ocs.oraclecloud.com"
+    username: "your-service-account@company.com"
+    password_source: "OCI_VAULT"
+    password_ref: "ocid1.vaultsecret.oc1..xxxxxxxx"
+    application: "EDM_Production"
+
+# =============================================================================
+# ARCS Configuration
+# =============================================================================
+arcs:
+  production:
+    url: "https://your-company-arcs.epm.us-phoenix-1.ocs.oraclecloud.com"
+    username: "your-service-account@company.com"
+    password_source: "OCI_VAULT"
+    password_ref: "ocid1.vaultsecret.oc1..xxxxxxxx"
+    application: "ARCS_Production"
+
+# =============================================================================
+# Data Exchange Configuration
+# =============================================================================
+data_exchange:
+  production:
+    url: "https://your-company-fccs.epm.us-phoenix-1.ocs.oraclecloud.com"
+    username: "your-service-account@company.com"
+    password_source: "OCI_VAULT"
+    password_ref: "ocid1.vaultsecret.oc1..xxxxxxxx"
+    applications:  # List of applications using Data Exchange
+      - FCCS_Production
+      - PBCS_Production
+
+# =============================================================================
+# Extraction Schedule Configuration
+# =============================================================================
+schedule:
+  # Daily extractions (SOX-critical)
+  daily:
+    time: "02:00"  # 2 AM local time
+    applications:
+      - fccs:journals
+      - fccs:period_status
+      - arcs:reconciliations
+      - edm:requests
+      - oci:audit_logs
+    retention_days: 2555  # 7 years for SOX
+  
+  # Weekly extractions
+  weekly:
+    day: "sunday"
+    time: "03:00"
+    applications:
+      - fccs:security
+      - pbcs:security
+      - edm:security
+      - arcs:security
+      - oci:access_summary
+    retention_days: 2555
+  
+  # Monthly extractions
+  monthly:
+    day: 1  # First of month
+    time: "04:00"
+    applications:
+      - fccs:dimension_changes
+      - pbcs:model_changes
+      - pcm:allocation_rules
+      - trcs:tax_rates
+    retention_days: 2555
+
+# =============================================================================
+# SOX Configuration
+# =============================================================================
+sox:
+  # Materiality thresholds
+  materiality:
+    fccs:
+      manual_je_threshold: 50000  # Alert if manual JE > $50k
+    arcs:
+      rec_threshold: 100000  # Material account threshold
+      aging_threshold_days: 30  # Alert if rec not certified within 30 days
+  
+  # Notification settings
+  notifications:
+    control_failures:
+      - sox-team@company.com
+      - controller@company.com
+    daily_summary:
+      - epm-team@company.com
+    
+  # Exception SLAs (hours)
+  slas:
+    data_load_errors: 24
+    reconciliation_uncertified: 48
+    access_review_pending: 168  # 7 days
+
+# =============================================================================
+# Output Configuration
+# =============================================================================
+output:
+  # Local storage
+  local:
+    path: ./outputs
+    compression: true
+    encryption: false  # Set true for production
+  
+  # OCI Object Storage (recommended for production)
+  object_storage:
+    enabled: true
+    namespace: "your-namespace"
+    bucket: "epm-audit-logs"
+    prefix: "audit/"
+    archive_tier_after_days: 90
+    
+  # Format options
+  formats:
+    - json  # Always keep JSON for API
+    - csv   # CSV for analyst review
+    - parquet  # Optional for analytics
+
+# =============================================================================
+# Security Configuration
+# =============================================================================
+security:
+  # Encryption at rest
+  encryption:
+    key_source: "OCI_VAULT"  # OCI_VAULT, AWS_KMS, AZURE_KEYVAULT
+    key_ocid: "ocid1.key.oc1..xxxxxxxx"
+  
+  # Credential handling
+  credentials:
+    prefer_keyring: true  # Use OS keyring if available
+    fallback_to_env: false  # Never use env vars in production
+    rotate_days: 90  # Alert on credential rotation
+
+# =============================================================================
+# Logging Configuration
+# =============================================================================
+logging:
+  level: INFO
+  format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+  handlers:
+    - type: file
+      path: ./logs/epm-audit.log
+      rotation: daily
+      retention: 30
+    - type: oci_logging  # Send to OCI Logging service
+      enabled: false
+      log_group: "ocid1.loggroup.oc1..xxxxxxxx"
+      log: "epm-audit-extraction"
