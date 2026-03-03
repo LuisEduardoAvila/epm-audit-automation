@@ -1,0 +1,110 @@
+{
+  "version": "3.28.0",
+  "appName": "EPM Audit Dashboard",
+  "appId": "epm-audit-dashboard",
+  "description": "Audit review interface for EPM Cloud artifacts",
+  "icon": "monitoring",
+  "resources": [
+    {
+      "name": "epm_autonomous_db",
+      "type": "oracle",
+      "displayName": "EPM Autonomous DB",
+      "connection": {
+        "host": "{{EPM_DB_HOST}}",
+        "port": 1522,
+        "database": "{{EPM_DB_SERVICE}}",
+        "username": "{{EPM_DB_USER}}",
+        "password": "{{EPM_DB_PASSWORD}}",
+        "ssl": true,
+        "wallet": true
+      }
+    }
+  ],
+  "queries": [
+    {
+      "name": "getDashboardSummary",
+      "resource": "epm_autonomous_db",
+      "actionType": "SQL",
+      "query": "SELECT * FROM EPM_AUDIT.V_DASHBOARD_SUMMARY",
+      "transformer": "// Transform to card-friendly format\nreturn data.map(row => ({\n  title: row.SOURCE_SYSTEM,\n  lastExtraction: moment(row.LAST_EXTRACTION).format('YYYY-MM-DD HH:mm'),\n  totalArtifacts: row.TOTAL_ARTIFACTS.toLocaleString(),\n  recent24h: row.ARTIFACTS_LAST_24H,\n  recent7d: row.ARTIFACTS_LAST_7D\n}));"
+    },
+    {
+      "name": "getArtifacts",
+      "resource": "epm_autonomous_db",
+      "actionType": "SQL",
+      "query": "SELECT * FROM EPM_AUDIT.ARTIFACTS WHERE source_system = {{source_system_filter}} AND extracted_date BETWEEN {{start_date}} AND {{end_date}} ORDER BY extracted_date DESC OFFSET {{(page_number - 1) * 50}} ROWS FETCH NEXT 50 ROWS ONLY",
+      "parameters": {
+        "source_system_filter": { "type": "string", "default": "FCCS" },
+        "start_date": { "type": "date", "default": "{{moment().subtract(7, 'days').format('YYYY-MM-DD')}}" },
+        "end_date": { "type": "date", "default": "{{moment().format('YYYY-MM-DD')}}" },
+        "page_number": { "type": "number", "default": 1 }
+      }
+    },
+    {
+      "name": "getChangedArtifacts",
+      "resource": "epm_autonomous_db",
+      "actionType": "SQL",
+      "query": "SELECT * FROM EPM_AUDIT.V_CHANGED_ARTIFACTS WHERE change_status IN ('NEW', 'CHANGED') AND source_system = {{source_system}} AND extracted_date >= {{start_date}} ORDER BY extracted_date DESC"
+    }
+  ],
+  "components": [
+    {
+      "type": "statistic",
+      "name": "summaryCards",
+      "config": {
+        "query": "getDashboardSummary",
+        "layout": "grid",
+        "cards": [
+          { "field": "lastExtraction", "label": "Last Extraction", "icon": "clock" },
+          { "field": "recent24h", "label": "Changes (24h)", "color": "blue", "icon": "activity" },
+          { "field": "totalArtifacts", "label": "Total Artifacts", "icon": "database" }
+        ]
+      }
+    },
+    {
+      "type": "table",
+      "name": "artifactsTable",
+      "config": {
+        "query": "getArtifacts",
+        "columns": [
+          { "field": "SOURCE_SYSTEM", "width": 100 },
+          { "field": "ARTIFACT_TYPE", "width": 150 },
+          { "field": "ARTIFACT_NAME", "width": 300, "link": true },
+          { "field": "EXTRACTED_DATE", "format": "datetime", "width": 150 },
+          { "field": "CHANGE_STATUS", "tag": true, "color": "{{self === 'CHANGED' ? 'orange' : 'green'}}" }
+        ],
+        "rowSelection": true,
+        "export": true,
+        "pagination": { "pageSize": 50, "serverSide": true }
+      }
+    },
+    {
+      "type": "form",
+      "name": "filterPanel",
+      "config": {
+        "layout": "horizontal",
+        "submitLabel": "Apply Filters",
+        "fields": [
+          { "type": "select", "name": "source_system", "label": "EPM System", 
+            "options": ["FCCS", "PBCS", "EDM", "DE", "ARCS", "PCM"],
+            "default": "FCCS" },
+          { "type": "date", "name": "start_date", "label": "Start Date" },
+          { "type": "date", "name": "end_date", "label": "End Date" }
+        ]
+      }
+    }
+  ],
+  "navigation": {
+    "items": [
+      { "label": "Dashboard", "icon": "home", "page": "dashboard" },
+      { "label": "Artifacts", "icon": "list", "page": "artifacts" },
+      { "label": "Changed Items", "icon": "alert-circle", "page": "changed" },
+      { "label": "Extraction Log", "icon": "activity", "page": "logs" }
+    ]
+  },
+  "permissions": {
+    "view": ["epm_auditors", "finance_team"],
+    "edit": ["epm_admins"],
+    "admin": ["platform_team"]
+  }
+}

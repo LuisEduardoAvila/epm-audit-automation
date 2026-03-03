@@ -2,6 +2,21 @@
 
 *Automated extraction of artifact changes, mappings, and metadata modifications across Oracle EPM Cloud applications*
 
+> **🔄 Migration in Progress**
+> 
+> **From:** Python scripts → **To:** ODI 12c → Oracle Autonomous DB → Retool
+>
+> - Baseline (Python): `v1.0-python-baseline` [GitHub Tag](https://github.com/LuisEduardoAvila/epm-audit-automation/releases/tag/v1.0-python-baseline)
+> - Migration Plan: `openspec/changes/epm-odi-autonomous-retool/`
+> - Status: Phase 1 (Foundation) - Database schema and ODI artifacts created
+>
+> **What's New:**
+> - Oracle Autonomous Database schema with unified artifact storage
+> - ODI 12c mapping and package templates in `odi-artifacts/`
+> - Retool dashboard configuration in `retool/`
+> - SOX-compliant audit trail via Oracle Data Safe
+
+
 ---
 
 ## Project Focus
