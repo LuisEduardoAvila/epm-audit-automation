@@ -386,6 +386,78 @@ epm oci-network --vcn ocid1.vcn.oc1.phx.xxx
 epm oci-network --vcn ocid1.vcn.oc1.phx.xxx --compartment ocid1.compartment.oc1..xxx
 ```
 
+### IAM / IDCS Commands
+
+> **Note:** Requires `oci` package. Install with `pip install oci` or `pip install -e ".[oci]"`.
+
+Query OCI IAM for users, groups, and memberships for SOX access reviews.
+
+#### List Users
+
+```bash
+# All users in compartment
+epm iam users --compartment ocid1.compartment.oc1..xxx
+
+# Filter by type
+epm iam users -c ocid1.compartment.oc1..xxx --filter service-accounts
+epm iam users -c ocid1.compartment.oc1..xxx --filter dormant
+epm iam users -c ocid1.compartment.oc1..xxx --filter privileged
+epm iam users -c ocid1.compartment.oc1..xxx --filter orphan
+
+# Export to CSV
+epm iam users -c ocid1.compartment.oc1..xxx --output csv --file users.csv
+```
+
+#### List Groups
+
+```bash
+# All groups in compartment
+epm iam groups --compartment ocid1.compartment.oc1..xxx
+
+# Filter privileged groups only
+epm iam groups -c ocid1.compartment.oc1..xxx --filter privileged
+
+# JSON output
+epm iam groups -c ocid1.compartment.oc1..xxx --output json
+```
+
+#### List Memberships
+
+```bash
+# All user-group memberships
+epm iam memberships --compartment ocid1.compartment.oc1..xxx
+
+# Filter by group
+epm iam memberships -c ocid1.compartment.oc1..xxx --group Administrators
+
+# CSV export
+epm iam memberships -c ocid1.compartment.oc1..xxx --output csv --file memberships.csv
+```
+
+#### SOX Access Review
+
+Generate comprehensive access review report:
+
+```bash
+# Full access review
+epm iam access-review --compartment ocid1.compartment.oc1..xxx
+
+# Export to CSV for auditors
+epm iam access-review -c ocid1.compartment.oc1..xxx --output csv --file access-review.csv
+
+# Adjust dormant threshold
+epm iam access-review -c ocid1.compartment.oc1..xxx --dormant-days 60
+```
+
+**Access Review includes:**
+- Total users (human + service accounts)
+- Privileged users (admin group members)
+- Dormant accounts (no login >90 days)
+- Orphan accounts (no group memberships)
+- Group assignments
+- SoD (Segregation of Duties) violations
+- Security flags and recommendations
+
 ---
 
 ## Output Formats
@@ -567,7 +639,8 @@ epm_audit_cli/
     │
     ├── clients/
     │   ├── __init__.py
-    │   └── base.py          # BaseAPIClient (retry, pagination)
+    │   ├── base.py          # BaseAPIClient (retry, pagination)
+    │   └── iam.py           # IAMClient (OCI Identity)
     │
     ├── output/
     │   ├── __init__.py      # format_output() helper
@@ -582,7 +655,8 @@ epm_audit_cli/
         ├── artifact.py      # artifact-changes
         ├── edm.py           # edm-requests, edm-violations
         ├── rules.py         # rules, rule, rule-diff
-        └── oci.py           # oci-instances, oci-storage, oci-network
+        ├── oci.py           # oci-instances, oci-storage, oci-network
+        └── iam.py           # iam-users, iam-groups, iam-memberships, iam-access-review
 ```
 
 ### Design Principles

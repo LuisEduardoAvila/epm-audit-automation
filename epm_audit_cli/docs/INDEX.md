@@ -14,6 +14,14 @@
 - **[Classification](README.md#classification)** — Understand MATERIAL vs OPERATIONAL changes
 - **[SOX Audit Report Example](README.md#sox-audit-trail-report)** — Monthly report script
 
+### Access Reviews (IAM)
+
+- **[iam users command](README.md#list-users)** — List OCI IAM users with filters
+- **[iam groups command](README.md#list-groups)** — List OCI IAM groups
+- **[iam memberships command](README.md#list-memberships)** — User-group membership mapping
+- **[iam access-review command](README.md#sox-access-review)** — Comprehensive SOX access review report
+- **[User Filters](README.md#list-users)** — Filter by service-accounts, dormant, privileged, orphan
+
 ### EDM Monitoring
 
 - **[edm-requests command](README.md#list-edm-requests)** — Track metadata deployment requests
@@ -70,3 +78,7 @@
 | `rules` | List rules | `epm rules --app pbcs_prod --type CALCULATION` |
 | `rule-diff` | Compare baseline | `epm rule-diff --app pbcs_prod --id Calc --baseline b.json` |
 | `oci-instances` | OCI compute | `epm oci-instances --compartment ocid1...` |
+| `iam users` | IAM users | `epm iam users -c ocid1... --filter privileged` |
+| `iam groups` | IAM groups | `epm iam groups -c ocid1...` |
+| `iam memberships` | User-group map | `epm iam memberships -c ocid1...` |
+| `iam access-review` | SOX access review | `epm iam access-review -c ocid1... --output csv` |
