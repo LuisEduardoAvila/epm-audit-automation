@@ -1,0 +1,11 @@
+schema: openspec.v1
+change: epm-audit-cli
+created: 2026-03-27
+status: proposed
+description: CLI for EPM audit operations not covered by EPM Automate
+author: Luis
+tags:
+  - cli
+  - audit
+  - oracle-epm
+  - gap-coverage
