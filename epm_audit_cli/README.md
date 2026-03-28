@@ -44,6 +44,10 @@ Full documentation available in `docs/`:
 | `epm oci-instances` | List OCI compute instances |
 | `epm oci-storage` | Get OCI storage bucket info |
 | `epm oci-network` | Get OCI VCN status |
+| `epm iam users` | List OCI IAM users |
+| `epm iam groups` | List OCI IAM groups |
+| `epm iam memberships` | List user-group memberships |
+| `epm iam access-review` | Generate SOX access review |
 
 ## Output Formats
 

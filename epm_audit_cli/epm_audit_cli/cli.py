@@ -558,6 +558,169 @@ def oci_network_cmd(
     oci_network(ctx, vcn, compartment, output)
 
 
+# IAM Commands
+@cli.group(name="iam")
+@click.pass_context
+def iam(ctx: click.Context) -> None:
+    """OCI IAM / IDCS identity commands.
+    
+    Query users, groups, and memberships for SOX access reviews.
+    
+    Examples:
+        epm iam users --compartment ocid1.compartment.xxx
+        epm iam groups --compartment ocid1.compartment.xxx
+        epm iam access-review --compartment ocid1.compartment.xxx
+    """
+    pass
+
+
+@iam.command(name="users")
+@click.option(
+    "--compartment", "-c",
+    required=True,
+    help="Compartment OCID",
+)
+@click.option(
+    "--filter", "-f",
+    type=click.Choice(["all", "service-accounts", "dormant", "privileged", "orphan"]),
+    default="all",
+    help="Filter users by type",
+)
+@click.option(
+    "--output", "-o",
+    type=click.Choice(["table", "json", "csv"]),
+    default="table",
+    help="Output format",
+)
+@click.option(
+    "--file",
+    type=click.Path(),
+    help="Output file (for CSV format)",
+)
+@click.pass_context
+def iam_users_cmd(
+    ctx: click.Context,
+    compartment: str,
+    filter: str,
+    output: str,
+    file: Optional[str],
+) -> None:
+    """List all users in compartment.
+    
+    Examples:
+        epm iam users --compartment ocid1.compartment.xxx
+        epm iam users -c ocid1.compartment.xxx --filter service-accounts
+    """
+    from epm_audit_cli.commands.iam import iam_users
+    iam_users(ctx, compartment, filter, output, file)
+
+
+@iam.command(name="groups")
+@click.option(
+    "--compartment", "-c",
+    required=True,
+    help="Compartment OCID",
+)
+@click.option(
+    "--filter", "-f",
+    type=click.Choice(["all", "privileged"]),
+    default="all",
+    help="Filter groups by type",
+)
+@click.option(
+    "--output", "-o",
+    type=click.Choice(["table", "json", "csv"]),
+    default="table",
+    help="Output format",
+)
+@click.pass_context
+def iam_groups_cmd(
+    ctx: click.Context,
+    compartment: str,
+    filter: str,
+    output: str,
+) -> None:
+    """List all groups in compartment.
+    
+    Examples:
+        epm iam groups --compartment ocid1.compartment.xxx
+    """
+    from epm_audit_cli.commands.iam import iam_groups
+    iam_groups(ctx, compartment, filter, output)
+
+
+@iam.command(name="memberships")
+@click.option(
+    "--compartment", "-c",
+    required=True,
+    help="Compartment OCID",
+)
+@click.option(
+    "--group", "-g",
+    help="Filter by group name",
+)
+@click.option(
+    "--output", "-o",
+    type=click.Choice(["table", "json", "csv"]),
+    default="table",
+    help="Output format",
+)
+@click.pass_context
+def iam_memberships_cmd(
+    ctx: click.Context,
+    compartment: str,
+    group: Optional[str],
+    output: str,
+) -> None:
+    """List user-group memberships.
+    
+    Examples:
+        epm iam memberships --compartment ocid1.compartment.xxx
+    """
+    from epm_audit_cli.commands.iam import iam_memberships
+    iam_memberships(ctx, compartment, group, output)
+
+
+@iam.command(name="access-review")
+@click.option(
+    "--compartment", "-c",
+    required=True,
+    help="Compartment OCID",
+)
+@click.option(
+    "--output", "-o",
+    type=click.Choice(["table", "json", "csv"]),
+    default="table",
+    help="Output format",
+)
+@click.option(
+    "--file",
+    type=click.Path(),
+    help="Output file (for CSV format)",
+)
+@click.option(
+    "--dormant-days",
+    type=int,
+    default=90,
+    help="Days without login to consider dormant",
+)
+@click.pass_context
+def iam_access_review_cmd(
+    ctx: click.Context,
+    compartment: str,
+    output: str,
+    file: Optional[str],
+    dormant_days: int,
+) -> None:
+    """Generate comprehensive SOX access review.
+    
+    Examples:
+        epm iam access-review --compartment ocid1.compartment.xxx
+    """
+    from epm_audit_cli.commands.iam import iam_access_review
+    iam_access_review(ctx, compartment, output, file, dormant_days)
+
+
 def main() -> None:
     """Main entry point"""
     cli(obj=None)

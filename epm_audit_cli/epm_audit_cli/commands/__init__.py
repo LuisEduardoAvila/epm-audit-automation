@@ -6,6 +6,7 @@ from epm_audit_cli.commands.artifact import artifact_changes
 from epm_audit_cli.commands.edm import edm_requests, edm_request, edm_violations
 from epm_audit_cli.commands.rules import rules, rule, rule_diff
 from epm_audit_cli.commands.oci import oci_instances, oci_storage, oci_network
+from epm_audit_cli.commands.iam import iam_group, iam_users, iam_groups, iam_memberships, iam_access_review
 
 __all__ = [
     "login",
@@ -20,4 +21,9 @@ __all__ = [
     "oci_instances",
     "oci_storage",
     "oci_network",
+    "iam_group",
+    "iam_users",
+    "iam_groups",
+    "iam_memberships",
+    "iam_access_review",
 ]

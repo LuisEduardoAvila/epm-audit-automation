@@ -65,20 +65,20 @@
 
 ## Phase 7: IAM / IDCS Commands
 
-- [ ] 7.1 Create `commands/iam.py` module
-- [ ] 7.2 Create `clients/iam.py` with `IAMClient` class (wraps OCI IdentityClient)
-- [ ] 7.3 Implement `epm iam-users --compartment <id>` command
-- [ ] 7.4 Implement `epm iam-groups --compartment <id>` command
-- [ ] 7.5 Implement `epm iam-memberships --compartment <id>` command
-- [ ] 7.6 Implement `epm iam-access-review --compartment <id>` command (full SOX access review)
-- [ ] 7.7 Add `--filter service-accounts` to show only service accounts
-- [ ] 7.8 Add `--filter dormant` to show dormant accounts (no login >90 days)
-- [ ] 7.9 Add `--filter privileged` to show privileged users
-- [ ] 7.10 Add `--output csv` for SOX access review export format
-- [ ] 7.11 Implement dormant account detection (last login timestamp)
-- [ ] 7.12 Implement privileged user detection (admin group membership)
-- [ ] 7.13 Add SoD (Segregation of Duties) violation detection
-- [ ] 7.14 Add orphan account detection (no group memberships)
+- [x] 7.1 Create `commands/iam.py` module
+- [x] 7.2 Create `clients/iam.py` with `IAMClient` class (wraps OCI IdentityClient)
+- [x] 7.3 Implement `epm iam-users --compartment <id>` command
+- [x] 7.4 Implement `epm iam-groups --compartment <id>` command
+- [x] 7.5 Implement `epm iam-memberships --compartment <id>` command
+- [x] 7.6 Implement `epm iam-access-review --compartment <id>` command (full SOX access review)
+- [x] 7.7 Add `--filter service-accounts` to show only service accounts
+- [x] 7.8 Add `--filter dormant` to show dormant accounts (no login >90 days)
+- [x] 7.9 Add `--filter privileged` to show privileged users
+- [x] 7.10 Add `--output csv` for SOX access review export format
+- [x] 7.11 Implement dormant account detection (last login timestamp)
+- [x] 7.12 Implement privileged user detection (admin group membership)
+- [x] 7.13 Add SoD (Segregation of Duties) violation detection
+- [x] 7.14 Add orphan account detection (no group memberships)
 
 ## Phase 7: Error Handling & UX
 
