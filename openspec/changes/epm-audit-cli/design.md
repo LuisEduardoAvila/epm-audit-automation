@@ -63,13 +63,15 @@ epm_audit_cli/
 │   ├── artifact.py        # epm artifact-changes
 │   ├── edm.py             # epm edm-requests, edm-violations
 │   ├── rules.py           # epm rules, rule-diff
-│   └── oci.py             # epm oci-instances, oci-storage, oci-network
+│   ├── oci.py             # epm oci-instances, oci-storage, oci-network
+│   └── iam.py             # epm iam-users, iam-groups, iam-memberships, iam-access-review
 ├── clients/
 │   ├── __init__.py
 │   ├── base.py            # Base API client
 │   ├── epm.py             # EPM Cloud client
 │   ├── edm.py             # EDM client
-│   └── oci_client.py      # OCI client (optional)
+│   ├── oci_client.py      # OCI client (optional)
+│   └── iam.py             # OCI IAM/IDCS client
 ├── output/
 │   ├── __init__.py
 │   ├── table.py           # Table formatter
@@ -81,7 +83,8 @@ epm_audit_cli/
 └── utils/
     ├── __init__.py
     ├── dates.py           # Date parsing utilities
-    └── classify.py        # Material/operational classification
+    ├── classify.py        # Material/operational classification
+    └── access_review.py   # SOX access review utilities (dormant, privileged, SoD)
 ```
 
 ### CLI Framework: Click
@@ -176,6 +179,79 @@ class EPMClient(BaseAPIClient):
             params['modifiedBy'] = modified_by
             
         return self._paginated_request('GET', endpoint, params)
+```
+
+**IAM Client:**
+```python
+class IAMClient:
+    """OCI Identity and Access Management client for IDCS user/group queries."""
+    
+    def __init__(self, config: dict):
+        from oci.identity import IdentityClient
+        self.client = IdentityClient(config)
+        self.compartment_id = config.get('tenancy')
+    
+    def list_users(self, compartment_id: str = None) -> List[Dict]:
+        """List all users in compartment."""
+        users = self.client.list_users(
+            compartment_id=compartment_id or self.compartment_id
+        )
+        return [self._enrich_user(u) for u in users.data]
+    
+    def list_groups(self, compartment_id: str = None) -> List[Dict]:
+        """List all groups in compartment."""
+        groups = self.client.list_groups(
+            compartment_id=compartment_id or self.compartment_id
+        )
+        return [{'name': g.name, 'id': g.id} for g in groups.data]
+    
+    def get_group_memberships(self, compartment_id: str, group_id: str) -> List[str]:
+        """Get user IDs for group members."""
+        memberships = self.client.list_user_group_memberships(
+            compartment_id=compartment_id,
+            group_id=group_id
+        )
+        return [m.user_id for m in memberships.data]
+    
+    def get_access_review(self, compartment_id: str) -> Dict:
+        """Generate comprehensive access review for SOX audit."""
+        users = self.list_users(compartment_id)
+        groups = self.list_groups(compartment_id)
+        
+        # Build group membership map
+        memberships = {}
+        for group in groups:
+            memberships[group['name']] = self.get_group_memberships(
+                compartment_id, group['id']
+            )
+        
+        return {
+            'users': users,
+            'groups': groups,
+            'memberships': memberships,
+            'service_accounts': [u for u in users if self._is_service_account(u)],
+            'privileged_users': [u for u in users if self._is_privileged(u, memberships)],
+            'dormant_accounts': [u for u in users if self._is_dormant(u)]
+        }
+    
+    def _is_service_account(self, user: Dict) -> bool:
+        return user.get('name', '').startswith(('epm-', 'svc-', 'automation-'))
+    
+    def _is_dormant(self, user: Dict, days: int = 90) -> bool:
+        last_login = user.get('last_login_time')
+        if not last_login:
+            return True  # Never logged in
+        from datetime import datetime, timedelta
+        threshold = datetime.now() - timedelta(days=days)
+        return last_login < threshold
+    
+    def _is_privileged(self, user: Dict, memberships: Dict) -> bool:
+        admin_groups = {'Administrators', 'IDCSAdministrators', 'SecurityAdmins'}
+        user_id = user.get('id')
+        for group_name, member_ids in memberships.items():
+            if group_name in admin_groups and user_id in member_ids:
+                return True
+        return False
 ```
 
 ### Classification Logic

@@ -63,6 +63,23 @@
 - [ ] 6.6 Add tag filtering for EPM-related resources
 - [ ] 6.7 Add `oci` as optional dependency in `pyproject.toml`
 
+## Phase 7: IAM / IDCS Commands
+
+- [ ] 7.1 Create `commands/iam.py` module
+- [ ] 7.2 Create `clients/iam.py` with `IAMClient` class (wraps OCI IdentityClient)
+- [ ] 7.3 Implement `epm iam-users --compartment <id>` command
+- [ ] 7.4 Implement `epm iam-groups --compartment <id>` command
+- [ ] 7.5 Implement `epm iam-memberships --compartment <id>` command
+- [ ] 7.6 Implement `epm iam-access-review --compartment <id>` command (full SOX access review)
+- [ ] 7.7 Add `--filter service-accounts` to show only service accounts
+- [ ] 7.8 Add `--filter dormant` to show dormant accounts (no login >90 days)
+- [ ] 7.9 Add `--filter privileged` to show privileged users
+- [ ] 7.10 Add `--output csv` for SOX access review export format
+- [ ] 7.11 Implement dormant account detection (last login timestamp)
+- [ ] 7.12 Implement privileged user detection (admin group membership)
+- [ ] 7.13 Add SoD (Segregation of Duties) violation detection
+- [ ] 7.14 Add orphan account detection (no group memberships)
+
 ## Phase 7: Error Handling & UX
 
 - [ ] 7.1 Create custom `EPMError` exception classes
@@ -103,6 +120,10 @@ How to verify this change is complete:
 - [ ] Can retrieve EDM requests and violations
 - [ ] Can extract and diff business rules
 - [ ] OCI commands work (if implemented)
+- [ ] IAM commands retrieve users, groups, memberships from IDCS/OCI IAM
+- [ ] Access review generates SOX-compliant report with all sections
+- [ ] Dormant and privileged user detection working
+- [ ] CSV export format accepted by audit team
 - [ ] Error messages are clear and actionable
 - [ ] Documentation covers all commands
 - [ ] `pip install` works in clean environment

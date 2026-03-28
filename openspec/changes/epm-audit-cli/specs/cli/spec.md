@@ -250,7 +250,118 @@
 
 ---
 
-### REQ-006: Output Formats
+### REQ-006: IAM / IDCS User & Group Management
+
+**As a** SOX auditor  
+**I want** to retrieve user and group information from IDCS/OCI IAM  
+**So that** I can perform access reviews and detect security risks
+
+#### Scenarios
+
+##### SC-024: List IAM Users
+
+**Given** valid OCI authentication  
+**When** I run `epm iam-users --compartment ocid1.compartment.xxx`  
+**Then** the CLI calls OCI Identity API  
+**And** returns list of users with metadata  
+**And** includes last login timestamp for dormant detection
+
+**Edge Cases:**
+- OCI CLI not configured → Setup instructions
+- No users → Empty result with compartment validation
+- Permission denied → Required policy list
+
+##### SC-025: List IAM Groups
+
+**Given** valid OCI authentication  
+**When** I run `epm iam-groups --compartment ocid1.compartment.xxx`  
+**Then** the CLI calls OCI Identity API  
+**And** returns list of groups with member counts  
+**And** identifies privileged groups (Administrators, etc.)
+
+**Edge Cases:**
+- Large group list → Pagination with progress indicator
+- Nested groups → Flatten or indicate hierarchy
+
+##### SC-026: List Group Memberships
+
+**Given** valid OCI authentication  
+**When** I run `epm iam-memberships --compartment ocid1.compartment.xxx`  
+**Then** the CLI returns user-group mapping  
+**And** shows which users belong to which groups  
+**And** supports `--group <name>` to filter specific group
+
+**Edge Cases:**
+- No memberships → Empty result
+- User in many groups → Summarize with detail option
+- Cross-compartment memberships → Indicate scope
+
+##### SC-027: Access Review Report
+
+**Given** valid OCI authentication  
+**When** I run `epm iam-access-review --compartment ocid1.compartment.xxx`  
+**Then** the CLI generates comprehensive access review  
+**And** includes users, service accounts, privileged users, dormant accounts  
+**And** includes group assignments and SoD violations  
+**And** outputs in SOX audit format
+
+**Report Sections:**
+| Section | Content |
+|---------|---------|
+| Summary | Total counts, key metrics |
+| Users | All users with last login |
+| Service Accounts | Users matching `epm-*` or `svc-*` patterns |
+| Privileged Users | Members of admin groups |
+| Dormant Accounts | No login >90 days |
+| Group Assignments | User-group matrix |
+| SoD Violations | Conflicting role combinations |
+| Security Flags | Anomalies, recommendations |
+
+**Edge Cases:**
+- No users → Empty report with compartment validation
+- No privileged groups → Report all users as non-privileged
+- Dormant threshold → Configurable via `--dormant-days`
+
+##### SC-028: Filter Users
+
+**Given** valid OCI authentication  
+**When** I run `epm iam-users --compartment <id> --filter service-accounts`  
+**Then** the CLI filters to service accounts only  
+**And** supports `--filter dormant` for dormant accounts  
+**And** supports `--filter privileged` for privileged users  
+**And** supports multiple filters with comma separation
+
+**Filter Types:**
+| Filter | Criteria |
+|--------|----------|
+| `service-accounts` | Username starts with `epm-` or `svc-` |
+| `dormant` | Last login >90 days |
+| `privileged` | Member of admin group |
+| `orphan` | No group memberships |
+
+##### SC-029: CSV Export for SOX Review
+
+**Given** any IAM command  
+**When** I run with `--output csv --file access-review.csv`  
+**Then** the CLI outputs CSV in SOX audit format  
+**And** includes required columns (User, Email, Groups, Last Login, Status)  
+**And** can be imported to Excel or GRC system
+
+**CSV Format:**
+```csv
+Username,Email,Groups,Privileged,LastLogin,Status,DormantDays
+john.smith@company.com,john.smith@company.com,"Admin,Finance",Yes,2026-03-15,Active,0
+svc-automation@company.com,svc-automation@company.com,"ServiceAccounts",No,2026-03-27,Active,0
+```
+
+**Edge Cases:**
+- User with no email → Empty column
+- User with many groups → Comma-separated in quotes
+- Unicode characters → UTF-8 encoding
+
+---
+
+### REQ-007: Output Formats
 
 **As a** script developer  
 **I want** structured output in multiple formats  
@@ -313,6 +424,9 @@
 | N/A | `epm edm-requests` | Gap: request history |
 | N/A | `epm rule-diff` | Gap: rule comparison |
 | N/A | `epm oci-instances` | Gap: infrastructure |
+| N/A | `epm iam-users` | Gap: IDCS user audit |
+| N/A | `epm iam-groups` | Gap: IDCS group audit |
+| N/A | `epm iam-access-review` | Gap: SOX access review |
 
 #### Global Flags
 
