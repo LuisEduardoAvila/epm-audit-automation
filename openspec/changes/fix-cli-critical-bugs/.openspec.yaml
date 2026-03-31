@@ -1,0 +1,10 @@
+schema: openspec.v1
+created: 2026-03-31
+status: in_progress
+change_type: fix
+priority: critical
+estimated_effort: medium
+tags:
+  - bugfix
+  - cli
+  - breaking

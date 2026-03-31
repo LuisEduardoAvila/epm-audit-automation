@@ -79,6 +79,47 @@ class ConfigLoader:
             )
         return apps[app_id]
 
+    def get_application(self, app_id: str) -> Dict[str, Any]:
+        """
+        Get configuration for a specific application (snake_case alias).
+
+        Args:
+            app_id: Application ID (e.g., 'fccs_prod')
+
+        Returns:
+            Application configuration dictionary
+
+        Raises:
+            KeyError: If application not found
+        """
+        return self.getApplication(app_id)
+
+    def get_applications(self) -> Dict[str, Dict[str, Any]]:
+        """
+        Get all applications configuration (snake_case alias).
+
+        Returns:
+            Dictionary of application ID to configuration
+        """
+        return self.getApplications()
+
+    def list_applications(self) -> List[Dict[str, Any]]:
+        """
+        List all applications with basic info.
+
+        Returns:
+            List of application info dictionaries with id, name, type, sox_relevant
+        """
+        return [
+            {
+                "id": app_id,
+                "name": app.get("name"),
+                "type": app.get("type"),
+                "sox_relevant": app.get("metadata", {}).get("sox_relevant", False),
+            }
+            for app_id, app in self.getApplications().items()
+        ]
+
     def getApplicationIds(self) -> List[str]:
         """Get list of all configured application IDs"""
         return list(self.getApplications().keys())

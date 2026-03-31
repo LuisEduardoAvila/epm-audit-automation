@@ -18,12 +18,13 @@ from rich.console import Console
 from epm_audit_cli import __version__
 from epm_audit_cli.config.loader import ConfigLoader
 from epm_audit_cli.output import format_output, get_formatter
-from epm_audit_cli.commands.login import login
+from epm_audit_cli.commands.login import login, _get_token_manager as get_token_manager
 from epm_audit_cli.commands.logout import logout
 from epm_audit_cli.commands.artifact import artifact_changes
 from epm_audit_cli.commands.edm import edm_requests, edm_request, edm_violations
 from epm_audit_cli.commands.rules import rules, rule, rule_diff
 from epm_audit_cli.commands.oci import oci_instances, oci_storage, oci_network
+from epm_audit_cli.commands.config import config_group
 
 console = Console()
 
@@ -35,6 +36,32 @@ class CLIContext:
         self.config: Optional[ConfigLoader] = None
         self.verbose: bool = False
         self.output_format: str = "table"
+        self.tokens: dict = {}
+        self.token_manager = None
+
+    def get_token(self, app_id: str) -> Optional[str]:
+        """Get token for an app, checking stored tokens."""
+        return self.tokens.get(app_id)
+
+    def get_token_with_autologin(self, app_id: str) -> Optional[str]:
+        """
+        Get token for an app, attempting auto-login if not found.
+
+        Returns the token if available or auto-login succeeded.
+        """
+        # Check if we have a token
+        token = self.tokens.get(app_id)
+        if token:
+            return token
+
+        # Try to get token from token manager
+        if self.token_manager:
+            token = self.token_manager.get_token(app_id)
+            if token:
+                self.tokens[app_id] = token
+                return token
+
+        return None
 
 
 @click.group()
@@ -65,7 +92,6 @@ def cli(ctx: click.Context, config: Optional[str], verbose: bool) -> None:
     # Initialize CLI context
     ctx_obj = ctx.ensure_object(CLIContext)
     ctx_obj.verbose = verbose
-    ctx_obj.verbose = verbose
 
     # Load configuration
     if config:
@@ -83,6 +109,39 @@ def cli(ctx: click.Context, config: Optional[str], verbose: bool) -> None:
                 )
             ctx_obj.config = None
 
+    # Initialize token manager and check for stored tokens
+    _init_token_manager(ctx_obj, verbose)
+
+
+def _init_token_manager(ctx_obj: CLIContext, verbose: bool) -> None:
+    """
+    Initialize token manager and check for stored tokens on startup.
+
+    Args:
+        ctx_obj: CLIContext instance
+        verbose: Whether to show verbose output
+    """
+    from epm_audit_cli.auth import TokenManager
+
+    try:
+        # Initialize token manager (auto backend: keyring > file > env)
+        token_mgr = TokenManager()
+        ctx_obj.token_manager = token_mgr
+
+        # Check for stored tokens in available backends
+        available_tokens = token_mgr.list_tokens()
+
+        if available_tokens and verbose:
+            console.print(
+                f"[cyan]Found stored tokens:[/cyan] {', '.join(available_tokens.keys())}"
+            )
+
+    except Exception as e:
+        if verbose:
+            console.print(f"[yellow]Warning: Could not initialize token manager: {e}[/yellow]")
+        # Create a minimal token manager anyway
+        ctx_obj.token_manager = get_token_manager("auto")
+
 
 @cli.command(name="login")
 @click.argument("app", required=False)
@@ -97,12 +156,19 @@ def cli(ctx: click.Context, config: Optional[str], verbose: bool) -> None:
     default="auto",
     help="Credential backend to use",
 )
+@click.option(
+    "--token-backend",
+    type=click.Choice(["auto", "keyring", "file", "env"]),
+    default="auto",
+    help="Token storage backend (keyring=secure, file=fallback, env=CI/CD)",
+)
 @click.pass_context
 def login_cmd(
     ctx: click.Context,
     app: Optional[str],
     verify: bool,
     backend: str,
+    token_backend: str,
 ) -> None:
     """Authenticate to an EPM application.
 
@@ -112,8 +178,9 @@ def login_cmd(
     Examples:
         epm login fccs_prod
         epm login fccs_prod --verify
+        epm login fccs_prod --token-backend keyring
     """
-    login(ctx, app, verify, backend)
+    login(ctx, app, verify, backend, token_backend)
 
 
 @cli.command(name="logout")
@@ -556,6 +623,91 @@ def oci_network_cmd(
         epm oci-network --vcn ocid1.vcn.xxx
     """
     oci_network(ctx, vcn, compartment, output)
+
+
+# Config Commands
+@cli.group(name="config")
+@click.pass_context
+def config(ctx: click.Context) -> None:
+    """Manage EPM CLI configuration.
+    
+    Commands for configuring the CLI including:
+    - init: Initialize a new configuration file
+    - validate: Check configuration is valid
+    - list: Show configured applications
+    
+    Examples:
+        epm config init
+        epm config validate
+        epm config list
+    """
+    pass
+
+
+@config.command(name="init")
+@click.option(
+    "--output", "-o",
+    type=click.Path(),
+    default=None,
+    help="Output path for the config file (default: config/applications.yaml)",
+)
+@click.option(
+    "--interactive", "-i",
+    is_flag=True,
+    help="Interactive mode: prompt for configuration values",
+)
+@click.option(
+    "--force", "-f",
+    is_flag=True,
+    help="Overwrite existing config file",
+)
+def config_init_cmd(
+    ctx: click.Context,
+    output: Optional[str],
+    interactive: bool,
+    force: bool,
+) -> None:
+    """Initialize a new configuration file from template.
+    
+    Creates a configuration file based on the template with placeholder values.
+    Use --interactive to be prompted for specific values.
+    
+    Examples:
+        epm config init
+        epm config init --interactive
+        epm config init --output ~/my-epm-config.yaml --force
+    """
+    from epm_audit_cli.commands.config import config_init
+    config_init(output, interactive, force)
+
+
+@config.command(name="validate")
+@click.argument("config_file", type=click.Path(exists=True), default=None)
+def config_validate_cmd(ctx: click.Context, config_file: Optional[str]) -> None:
+    """Validate a configuration file.
+    
+    Checks that the configuration file is valid and all applications
+    have the required fields.
+    
+    Examples:
+        epm config validate
+        epm config validate /path/to/config.yaml
+    """
+    from epm_audit_cli.commands.config import config_validate
+    config_validate(config_file)
+
+
+@config.command(name="list")
+def config_list_cmd(ctx: click.Context) -> None:
+    """List configured applications.
+    
+    Displays all applications defined in the configuration file.
+    
+    Examples:
+        epm config list
+    """
+    from epm_audit_cli.commands.config import config_list
+    config_list()
 
 
 # IAM Commands

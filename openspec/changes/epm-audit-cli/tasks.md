@@ -33,6 +33,18 @@
 - [ ] 3.9 Implement pagination for large results
 - [ ] 3.10 Add rate limiting handling with retries
 
+## Phase 3: Token Persistence Integration
+
+- [ ] 3.1 Create auth module with AuthBackend ABC
+- [ ] 3.2 Implement KeyringBackend using system keyring
+- [ ] 3.3 Implement FileBackend for file-based token storage
+- [ ] 3.4 Implement EnvBackend for environment variable tokens
+- [ ] 3.5 Create TokenManager to coordinate backends
+- [ ] 3.6 Update logout.py to clear tokens from all backends
+- [x] 3.7 Update commands/login.py to use TokenManager instead of credential_manager
+- [x] 3.8 Update cli.py CLIContext to check for stored tokens on startup
+- [x] 3.9 Add --token-backend option to login command
+
 ## Phase 4: EDM Commands
 
 - [ ] 4.1 Create `commands/edm.py` module
